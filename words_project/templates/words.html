@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<script>
+    var url_ajax_evaluate = "{% url 'words.views.ajax_evaluate' %}";
+</script>
+
+<table class="words">
+    {% for word in words %}
+        <tr>
+            <td>
+                {{ word.translation }}
+            </td>
+            <td class="translations">
+                {% for synonym in word.synonyms %}
+                    <span id="translationMask{{ synonym.id }}">***</span>
+                    <span id="translation{{ synonym.id }}" class="translation">{{ synonym.word_display }}</span>
+                    <br>
+                {% endfor %}
+            </td>
+            <td class="controls">
+                {% for synonym in word.synonyms %}
+                    <a href="javascript:show({{ synonym.id }})">Show</a>
+                    <a href="javascript:evaluate({{ synonym.id }}, 0)">-</a> <a href="javascript:evaluate({{ synonym.id }}, 1)">+</a>
+                    <br>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

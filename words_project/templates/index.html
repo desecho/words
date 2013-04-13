@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for language in languages %}
+  <a href="{% url 'words.views.home' language.short_name %}">{{ language.name }}</a><br />
+{% endfor %}
+
+{% endblock %}

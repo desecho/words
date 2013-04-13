@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<script>
+  var language = '{{ language }}';
+  var text_id = '{{ text.id }}';
+</script>
+<script src="/static/js/get_translations.js"></script>
+<script src="/static/js/text.js"></script>
+<h2>{{ text.name }}</h2>
+<textarea id="text" class="text" readonly="readonly">{{ text.text }}</textarea>
+
+<div id="status" class="status"></div>
+<br />
+<input type="text" id="word_id" />
+<br />
+
+<div id="sidepanel" class="sidepanel"></div>
+
+{% endblock %}

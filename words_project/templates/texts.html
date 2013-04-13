@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% for text in texts %}
+    <a href="{% url 'words.views.text' language text.id %}">{{ text.name }}</a> <a href="{% url 'words.views.text_edit' language text.id %}">Edit</a><br>
+  {% endfor %}
+{% endblock %}
