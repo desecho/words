@@ -4,7 +4,8 @@ getSelectionLength = -> getSelectedWord().length
 
 showPosition = ->
   position_length = getSelectionStart() + ', ' + getSelectionLength()
-  $('#status').html(position_length + ' ' + '<a href="javascript:addManualReference(' + position_length + ')">Add reference</a>')
+  html = """ #{ position_length } <a href="javascript:addManualReference(#{ position_length })">Add reference</a> """
+  $('#status').html html
 
 getSelectionEnd = -> $('#text')[0].selectionEnd
 

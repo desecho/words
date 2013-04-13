@@ -7,7 +7,7 @@ get_translations = (word, with_reference) ->
         for i of translations
           html = '- ' + translations[i]
           if with_reference
-            html += ' [' + data.ids[i] + '] ' + '<a href="javascript:addReference(' + data.ids[i] + ', ' + getSelectionStart() + ')">Add reference</a>'
+            html += """ [#{ data.ids[i] }] <a href="javascript:addReference(#{ data.ids[i] }, #{ getSelectionStart() })">Add reference</a> """
           html += '<br>'
           $('#sidepanel').append html
     ).error ->

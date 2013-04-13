@@ -1,4 +1,4 @@
-#Movies
+#Words
 
 Helps to learn foreign words. English and French languages are supported.
 
@@ -8,6 +8,7 @@ Helps to learn foreign words. English and French languages are supported.
 * [Django v1.5](http://djangoproject.com)
 * [django-annoying v0.7.7+](https://github.com/skorokithakis/django-annoying)
 * [pyhunspell v0.1](https://code.google.com/p/pyhunspell/)
+* [CoffeeScript v1.6.1](http://coffeescript.org)
 
 ##Used Javascript libraries
 * [jQuery v1.9.1](http://jquery.com/)
@@ -27,9 +28,9 @@ python manage.py syncdb
 python manage.py collectstatic
 ```
 
-* Use the following command to recompile coffeescript.
+* Run the following command to compile coffeescript.
 ```
-coffee -bo js/ -cw src/
+coffee -bo words_project/static/js/ -cw words_project/static/src/
 ```
 
-* Delete the /static/src folder in production
+* Delete words_project/static/src folder before deployment.
