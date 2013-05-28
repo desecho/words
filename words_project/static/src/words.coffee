@@ -1,6 +1,7 @@
 show = (id) ->
-    $('#translation' + id).show()
-    $('#translationMask' + id).hide()
+  $('#translation' + id).show()
+  $('#translationMask' + id).hide()
+  return undefined
 
 evaluate = (id, result) ->
   show id
@@ -10,3 +11,4 @@ evaluate = (id, result) ->
   , (data) ->
   ).error ->
     displayError 'Ошибка сохранения результата.'
+  return undefined

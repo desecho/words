@@ -32,7 +32,7 @@ class Word(models.Model):
     knowledge_level = models.IntegerField(default=0)
 
     def word_display(self):
-        if self.gender != None:
+        if self.gender is not None:
             if self.gender == 0:
                 gender = 'f'
             elif self.gender == 1:

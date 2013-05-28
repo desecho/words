@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, redirect
+from django.http import HttpResponse
+from django.shortcuts import redirect
 from words.models import Word, Text, Reference, Language
 from annoying.decorators import ajax_request, render_to
 from django.contrib.auth import logout
@@ -173,7 +173,7 @@ def ajax_evaluate(request):
     if request.is_ajax() and request.method == 'POST':
         POST = request.POST
         if 'id' in POST and 'result' in POST:
-            id = POST.get('id')
+            id = int(POST.get('id'))
             result = int(POST.get('result'))
             updateKnowledgeLevel(id, getKnowledgeLevel(result))
     return HttpResponse()
