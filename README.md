@@ -10,4 +10,4 @@ The web application on Python2/Django/CoffeeScript/jQuery.
 
 * Run install.sh
 * Run deploy.sh to deploy 
-* You can delete words_project/static/src directory before deployment.
+* You can delete words_project/static/src directory after deployment.
