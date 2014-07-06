@@ -65,7 +65,7 @@ def home(request, language):
     words = Word.objects.filter(language__short_name=language)
     stats['total'] = len(words)
     stats['undetermined'] = len(words.filter(knowledge_level=0, language__short_name=language))
-    stats['learned'] = len(words.filter(knowledge_level=1))
+    stats['learned'] = (len(words.filter(knowledge_level=1)), len(words.filter(knowledge_level=1).exclude(date=None)))
     stats['unlearned'] = len(words.filter(knowledge_level=2))
     stats['anki'] = len(words.filter(knowledge_level=3))
     return {'stats': stats, 'language': language}
@@ -81,7 +81,9 @@ def index(request):
 @render_to('words.html')
 @login_required
 def words(request, language):
-    words = Word.objects.filter(knowledge_level=0, language__short_name=language).order_by('?')[:NUMBER_OF_WORDS_PER_LISTING]
+    words = Word.objects.filter(knowledge_level=0, language__short_name=language)
+    words = words.filter(date=None)
+    words = words.order_by('?')[:NUMBER_OF_WORDS_PER_LISTING]
     words = addSynonyms(words)
     return {'words': words}
 

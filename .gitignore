@@ -1,9 +1,16 @@
-*.py[cod]
 words_project/words_project/secret.py
+words_project/words_project/local_settings.py
 words_project/static/admin/
 words_project/static/django_extensions/
 words_project/static/js/
+words_project/static/bower/
 
+
+*.py[cod]
+
+# OS X meta data
+._*
+.DS_Store
 
 # C extensions
 *.so

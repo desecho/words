@@ -1,0 +1,9 @@
+Django==1.6.5
+mysql-python
+django-annoying
+hunspell
+south
+
+django_extensions
+Werkzeug
+django-debug_toolbar

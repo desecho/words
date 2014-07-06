@@ -30,6 +30,7 @@ class Word(models.Model):
     gender_rule = models.IntegerField(default=0)
     level = models.IntegerField(default=0)
     knowledge_level = models.IntegerField(default=0)
+    date = models.DateField(auto_now=True, null=True)
 
     def word_display(self):
         if self.gender is not None:
