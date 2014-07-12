@@ -10,7 +10,8 @@ class Language(models.Model):
 
 
 class Theme(models.Model):
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='child')
+    parent = models.ForeignKey('self', blank=True, null=True,
+                               related_name='child')
     name = models.CharField(max_length=255)
 
     def __unicode__(self):

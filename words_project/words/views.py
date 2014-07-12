@@ -64,8 +64,10 @@ def home(request, language):
     stats = {}
     words = Word.objects.filter(language__short_name=language)
     stats['total'] = len(words)
-    stats['undetermined'] = len(words.filter(knowledge_level=0, language__short_name=language))
-    stats['learned'] = (len(words.filter(knowledge_level=1)), len(words.filter(knowledge_level=1).exclude(date=None)))
+    stats['undetermined'] = len(words.filter(knowledge_level=0,
+                                language__short_name=language))
+    stats['learned'] = (len(words.filter(knowledge_level=1)),
+                        len(words.filter(knowledge_level=1).exclude(date=None)))
     stats['unlearned'] = len(words.filter(knowledge_level=2))
     stats['anki'] = len(words.filter(knowledge_level=3))
     return {'stats': stats, 'language': language}
@@ -81,7 +83,8 @@ def index(request):
 @render_to('words.html')
 @login_required
 def words(request, language):
-    words = Word.objects.filter(knowledge_level=0, language__short_name=language)
+    words = Word.objects.filter(knowledge_level=0,
+                                language__short_name=language)
     words = words.filter(date=None)
     words = words.order_by('?')[:NUMBER_OF_WORDS_PER_LISTING]
     words = addSynonyms(words)
@@ -120,17 +123,20 @@ def text(request, language, id):
 
         def getTextToReplace(text, position, shift, length):
             def fixToReplaceValue(to_replace, position, length, text):
-                while to_replace.count("\n"):
-                    position += to_replace.count("\n")
+                while to_replace.count('\n'):
+                    position += to_replace.count('\n')
                     to_replace = text[position:position + length]
                 return to_replace
             position += shift
-            position += text[:position].count("\n")  # a hack to solve a strange problem with new lines
+            # a hack to solve a strange problem with new lines
+            position += text[:position].count('\n')
             to_replace = text[position:position + length]
-            to_replace = fixToReplaceValue(to_replace, position, length, text)  # another hack to solve a strange problem with new lines
+            # another hack to solve a strange problem with new lines
+            to_replace = fixToReplaceValue(to_replace, position, length, text)
             return to_replace
 
-        def getReplacementText(knowledge_level, translation, word_id, reference_id):
+        def getReplacementText(knowledge_level, translation, word_id,
+                               reference_id):
             def getColor(knowledge_level):
                 if knowledge_level == 0:
                     color = 'grey'
@@ -150,14 +156,17 @@ def text(request, language, id):
         shift = 0
         for reference in references:
             length = getReferenceLength(reference)
-            to_replace = getTextToReplace(text.text, reference.position, shift, length)
-            replacement = getReplacementText(reference.word.knowledge_level, reference.word.translation, reference.word_id, reference.id)
+            to_replace = getTextToReplace(text.text, reference.position, shift,
+                                          length)
+            replacement = getReplacementText(reference.word.knowledge_level,
+                                             reference.word.translation,
+                                             reference.word_id, reference.id)
             text.text = text.text.replace(to_replace, replacement, 1)
             shift += len(replacement) - length
         return text.text
     text = getProcessedText(id)
     text.text = markText(text)
-    text.text = text.text.replace("\n", "<br>")
+    text.text = text.text.replace('\n', '<br>')
     return {'text': text, 'language': language}
 
 
@@ -208,9 +217,11 @@ def ajax_get_translations(request):
             word = word.encode('utf8')
             word_list = generateListOfWords(word, language)
             '''2DO: Needs work'''
-            words = Word.objects.filter(word__in=word_list, language__short_name=language)
+            words = Word.objects.filter(word__in=word_list,
+                                        language__short_name=language)
             if not len(words) and word[-1] == 's':
-                words = Word.objects.filter(word=word[0:-1], language__short_name=language)
+                words = Word.objects.filter(word=word[0:-1],
+                                            language__short_name=language)
             response = generateResponse(words)
             return response
 
@@ -224,11 +235,13 @@ def ajax_add_reference(request):
             return length
 
     def createReference(word_id, text_id, position, length):
-        r = Reference(word_id=word_id, text_id=text_id, position=position, length=length)
+        r = Reference(word_id=word_id, text_id=text_id, position=position,
+                      length=length)
         r.save()
     if request.is_ajax() and request.method == 'POST':
         POST = request.POST
-        if 'text_id' in POST and 'word_id' in POST and 'position' in POST and 'length' in POST:
+        if ('text_id' in POST and 'word_id' in POST and 'position' in POST and
+                'length' in POST):
             text_id = int(POST.get('text_id'))
             word_id = int(POST.get('word_id'))
             position = int(POST.get('position'))
@@ -241,7 +254,8 @@ def ajax_add_reference(request):
 @render_to('anki.html')
 @login_required
 def anki(request, language):
-    words = Word.objects.filter(knowledge_level=2, language__short_name=language)
+    words = Word.objects.filter(knowledge_level=2,
+                                language__short_name=language)
     # from itertools import chain
     # result_list = list(chain(page_list, article_list, post_list))
     # words_without_synonyms = words.filter(synonyms=0)
@@ -253,5 +267,6 @@ def anki(request, language):
 @render_to('script.html')
 @login_required
 def set_anki(request, language):
-    Word.objects.filter(knowledge_level=2, language__short_name=language).update(knowledge_level=3)
+    Word.objects.filter(knowledge_level=2,
+                        language__short_name=language).update(knowledge_level=3)
     return {'output': 'Done'}
