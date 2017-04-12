@@ -1,9 +1,6 @@
-#Words
-
-The web application on Python2/Django/CoffeeScript/jQuery.
-"Words" helps to learn foreign words. English and French languages are supported.
-
-##Installation instructions
+# Words
+ 
+## Installation instructions
 
 * Change the following variables in settings.py:
     * DATABASES
