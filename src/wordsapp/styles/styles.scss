@@ -1,0 +1,24 @@
+@import 'menu';
+@import 'utils';
+
+.translation {
+  width: 400px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.words {
+  width: 1000px;
+  border: 1px solid;
+  border-collapse: collapse;
+  border-color: grey;
+  margin: auto;
+
+  tr td {
+    font-size: 20px;
+    padding: 10px;
+    border-bottom: 1px solid;
+    border-color: grey;
+  }
+}
+

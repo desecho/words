@@ -1,0 +1,35 @@
+-r requirements.txt
+
+# Tests
+flexmock>=0.10.2
+beautifulsoup4>=4.5.1
+
+# Pytest
+pytest>=3.0
+pytest-cov>=1.8
+pytest-sugar>=0.7.0
+pytest-mock>=1.6.0
+pytest-django>=3.1.2
+
+# Django
+django-debug-toolbar>=1.7
+django-debug-toolbar-template-timings>=0.7
+django-test-without-migrations>=0.6
+
+# Linting
+pylint>=1.7.1
+tox>=2.7.0
+isort>=4.2
+flake8>=2.2.5
+bandit<1.6.0
+pydiatra>=0.11.2
+pydocstyle>=2.1.1
+safety>=1.6.1
+yapf
+unify
+
+## reStructuredText
+restructuredtext_lint>=1.1.2
+pygments>=2.2.0
+
+rope>=0.14.0

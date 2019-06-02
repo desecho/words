@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block content %}
+
+<table class="words">
+    {% for word in words %}
+        <tr id="word{{ word.pk }}">
+            <td>
+                <span>{{ word.word_display }}</span>
+            </td>
+            <td class="translation">
+              <span @click="showTranslation" data-translation="{{ word.translation_display }}">******</span>
+                {% comment %} {% for synonym in word.synonyms %}
+                    <span id="translationMask{{ synonym.id }}">***</span>
+                    <span id="translation{{ synonym.id }}" class="translation">{{ synonym.word_display }}</span>
+                    <br>
+                {% endfor %} {% endcomment %}
+            </td>
+            <td class="controls">
+                <a href="javascript:void(0)" @click="exportToAnki({{ word.pk }})">Export to Anki</a> |
+                <a href="javascript:void(0)" @click="markAsKnown({{ word.pk }})">Mark as known</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+{% block js %}
+  <script>
+    'use strict';
+
+    urls.words = '{% url 'words' %}';
+  </script>
+  <script src="{% static 'js/words.js' %}"></script>
+{% endblock %}

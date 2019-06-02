@@ -1,6 +1,0 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>{% block title %}Words{% endblock %}</title>
-{% for word in words %}
-  {{ word.translation }}%{% for synonym in word.synonyms %}{{ synonym.word_display }}&lt;br&gt;{% endfor %}<br>
-{% endfor %}

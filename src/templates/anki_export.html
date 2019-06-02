@@ -1,0 +1,4 @@
+{% for word in words %}
+  {{ word.word_display }},{{ word.translation_display }}<br>
+  {% comment %} {{ word.translation }}%{% for synonym in word.synonyms %}{{ synonym.word_display }}&lt;br&gt;{% endfor %}<br> {% endcomment %}
+{% endfor %}

@@ -1,0 +1,35 @@
+.controls {
+    width: 80px;
+}
+
+.text {
+    float: left;
+    width: 1000px;
+    height: 500px;
+}
+
+.sidepanel {
+    position: fixed;
+    right: 0;
+    width: 300px;
+}
+
+.status {
+    float: left;
+}
+
+.highlight-grey {
+    background-color: #eee;
+}
+
+.highlight-red {
+    background-color: #cc3300;
+}
+
+.highlight-blue {
+    background-color: #00ffff;
+}
+
+.highlight-green {
+    background-color: #00ff00;
+}

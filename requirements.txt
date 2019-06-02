@@ -1,9 +1,7 @@
-Django==1.6.5
-mysql-python
-django-annoying
-hunspell
-south
-
-django_extensions
-Werkzeug
-django-debug_toolbar
+Django==2.2.1
+mysqlclient==1.4.2.post1
+django-annoying==0.10.4
+hunspell==0.5.5
+raven==6.10.0
+django-simple-menu==1.2.1
+django-braces==1.13.0

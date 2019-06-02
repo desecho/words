@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<a href="{% url 'words' language %}">Words</a><br>
+{% comment %} <a href="{% url 'texts' language %}">Texts</a><br> {% endcomment %}
+<a href="{% url 'anki_export' language %}" target="_blank">Export to Anki</a><br>
+<a href="javascript:void(0)" @click="markAsExportedToAnki">Mark as exported to Anki</a>
+<br><br>
+<strong>Stats</strong>:<br>
+  Total - {{ stats.total }}
+{% endblock %}
+
+
+{% block js %}
+  <script>
+    'use strict';
+
+    urls.markAsExportedToAnki = '{% url 'mark_as_exported_to_anki' language %}';
+  </script>
+  <script src="{% static 'js/language.js' %}"></script>
+{% endblock %}

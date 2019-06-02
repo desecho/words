@@ -1,47 +1,22 @@
-words_project/words_project/secret.py
-words_project/words_project/local_settings.py
-words_project/static/admin/
-words_project/static/django_extensions/
-words_project/static/js/
-words_project/static/bower/
-
-
-*.py[cod]
+__pycache__
+.tox
+*.pyc
 
 # OS X meta data
 ._*
 .DS_Store
 
-# C extensions
-*.so
-
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-lib
-lib64
-
-# Installer logs
-pip-log.txt
-
-# Unit test / coverage reports
+local_settings.py
 .coverage
-.tox
-nosetests.xml
+.idea
+.vscode
+node_modules
+env
+.cache
+.pytest_cache/
+yarn-error.log
+package-lock.json
+src/wordsapp/static/js/*
+src/wordsapp/static/font/*
+src/wordsapp/static/style.css
 
-# Translations
-*.mo
-
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
