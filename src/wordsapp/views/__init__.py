@@ -35,7 +35,7 @@ class LanguageView(TemplateView):
 class HomeView(TemplateView):
     template_name = 'home.html'
 
-    def get_context_data(self, language):
+    def get_context_data(self):
         languages = Language.objects.all()
         return {'languages': languages}
 
@@ -74,83 +74,83 @@ class MarkWordsAsExportedToAnkiView(AjaxView):
         word = Word.objects.filter(language__short_name=language, export_to_anki=True).update(exported_to_anki=True, export_to_anki=False)
         return self.success()
 
-# def getProcessedText(id):
-#     text = Text.objects.get(id=id)
-#     text.text = text.text.replace(u'’', "'")  # replaces apostrophes
-#     return text
+def getProcessedText(id):
+    text = Text.objects.get(id=id)
+    text.text = text.text.replace(u'’', "'")  # replaces apostrophes
+    return text
 
 
-# @render_to('texts.html')
-# @login_required
-# def texts(request, language):
-#     texts = Text.objects.filter(language__short_name=language)
-#     return {'texts': texts, 'language': language}
+@render_to('texts.html')
+@login_required
+def texts(request, language):
+    texts = Text.objects.filter(language__short_name=language)
+    return {'texts': texts, 'language': language}
 
 
-# @render_to('text_edit.html')
-# @login_required
-# def text_edit(request, language, id):
-#     text = getProcessedText(id)
-#     return {'text': text, 'language': language}
+@render_to('text_edit.html')
+@login_required
+def text_edit(request, language, id):
+    text = getProcessedText(id)
+    return {'text': text, 'language': language}
 
 
-# @render_to('text.html')
-# @login_required
-# def text(request, language, id):
-#     def markText(text):
-#         def getReferenceLength(reference):
-#             if reference.length:
-#                 return reference.length
-#             else:
-#                 return len(reference.word.word)
+@render_to('text.html')
+@login_required
+def text(request, language, id):
+    def markText(text):
+        def getReferenceLength(reference):
+            if reference.length:
+                return reference.length
+            else:
+                return len(reference.word.word)
 
-#         def getTextToReplace(text, position, shift, length):
-#             def fixToReplaceValue(to_replace, position, length, text):
-#                 while to_replace.count('\n'):
-#                     position += to_replace.count('\n')
-#                     to_replace = text[position:position + length]
-#                 return to_replace
-#             position += shift
-#             # a hack to solve a strange problem with new lines
-#             position += text[:position].count('\n')
-#             to_replace = text[position:position + length]
-#             # another hack to solve a strange problem with new lines
-#             to_replace = fixToReplaceValue(to_replace, position, length, text)
-#             return to_replace
+        def getTextToReplace(text, position, shift, length):
+            def fixToReplaceValue(to_replace, position, length, text):
+                while to_replace.count('\n'):
+                    position += to_replace.count('\n')
+                    to_replace = text[position:position + length]
+                return to_replace
+            position += shift
+            # a hack to solve a strange problem with new lines
+            position += text[:position].count('\n')
+            to_replace = text[position:position + length]
+            # another hack to solve a strange problem with new lines
+            to_replace = fixToReplaceValue(to_replace, position, length, text)
+            return to_replace
 
-#         def getReplacementText(knowledge_level, translation, word_id,
-#                                reference_id):
-#             def getColor(knowledge_level):
-#                 if knowledge_level == 0:
-#                     color = 'grey'
-#                 elif knowledge_level == 1:
-#                     color = 'green'
-#                 elif knowledge_level == 2:
-#                     color = 'red'
-#                 else:
-#                     color = 'blue'
-#                 return color
-#             replacement = '<span class="highlight-%s" title="%s" id="reference%d">' % (getColor(knowledge_level), translation, reference_id) + to_replace + '</span>'
-#             if knowledge_level < 3:
-#                 replacement += '<a href="javascript:evaluate(%d, 0, %d)">[-]</a>' % (word_id, reference_id)
-#                 replacement += ' <a href="javascript:evaluate(%d, 1, %d)">[+]</a> ' % (word_id, reference_id)
-#             return replacement
-#         references = Reference.objects.filter(text=text).order_by('position')
-#         shift = 0
-#         for reference in references:
-#             length = getReferenceLength(reference)
-#             to_replace = getTextToReplace(text.text, reference.position, shift,
-#                                           length)
-#             replacement = getReplacementText(reference.word.knowledge_level,
-#                                              reference.word.translation,
-#                                              reference.word_id, reference.id)
-#             text.text = text.text.replace(to_replace, replacement, 1)
-#             shift += len(replacement) - length
-#         return text.text
-#     text = getProcessedText(id)
-#     text.text = markText(text)
-#     text.text = text.text.replace('\n', '<br>')
-#     return {'text': text, 'language': language}
+        def getReplacementText( translation, word_id,
+                               reference_id):
+            def getColor(knowledge_level):
+                # if knowledge_level == 0:
+                #     color = 'grey'
+                # elif knowledge_level == 1:
+                #     color = 'green'
+                # elif knowledge_level == 2:
+                #     color = 'red'
+                # else:
+                #     color = 'blue'
+                return 'blue'
+            replacement = '<span class="highlight-%s" title="%s" id="reference%d">' % ('blue', translation, reference_id) + to_replace +'</span>'
+            return replacement
+        references = Reference.objects.filter(text=text).order_by('position')
+        shift = 0
+        for reference in references:
+            length = getReferenceLength(reference)
+            to_replace = getTextToReplace(text.text, reference.position, shift,
+                                          length)
+            replacement = getReplacementText(
+                                             reference.word.translation,
+                                             reference.word_id, reference.id)
+            text.text = text.text.replace(to_replace, replacement, 1)
+            shift += len(replacement) - length
+        return text.text
+    text = getProcessedText(id)
+    text.text = markText(text)
+    text.text = text.text.replace('\n', '<br>')
+    references = Reference.objects.filter(text=text).order_by('position')
+    for r in references:
+        text.text += '<br>%d - %s' % (r.word.pk, r.word.word)
+    return {'text': text, 'language': language}
 
 
 # @ajax_request
