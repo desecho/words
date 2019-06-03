@@ -29,7 +29,7 @@ class Word(models.Model):
     part_of_speech = models.CharField(max_length=10)
     preposition = models.CharField(max_length=10)
     gender = models.IntegerField(default=0, null=True, blank=True)
-    gender_rule = models.IntegerField(default=0)
+    gender_exception = models.BooleanField(default=False)
     level = models.IntegerField(default=0)
     date = models.DateField(auto_now=True, null=True)
     export_to_anki = models.BooleanField(default=False)
@@ -57,15 +57,15 @@ class Word(models.Model):
             preposition = ' ' + self.preposition
         else:
             preposition = ''
-        if self.gender_rule:
-            gender_rule = ' (gender exception)'
+        if self.gender_exception:
+            gender_exception = ' (gender exception)'
         else:
-            gender_rule = ''
+            gender_exception = ''
         if self.example:
             example = ' ' + self.example
         else:
             example = ''
-        return self.word + preposition + gender + transcription + f' ({self.part_of_speech})' + gender_rule + example
+        return self.word + preposition + gender + transcription + f' ({self.part_of_speech})' + gender_exception + example
 
     @property
     def translation_display(self):
