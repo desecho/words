@@ -57,11 +57,15 @@ class Word(models.Model):
             preposition = ' ' + self.preposition
         else:
             preposition = ''
+        if self.gender_rule:
+            gender_rule = ' (gender exception)'
+        else:
+            gender_rule = ''
         if self.example:
             example = ' ' + self.example
         else:
             example = ''
-        return self.word + preposition + gender + transcription + f' ({self.part_of_speech})' + example
+        return self.word + preposition + gender + transcription + f' ({self.part_of_speech})' + gender_rule + example
 
     @property
     def translation_display(self):
