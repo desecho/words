@@ -7,6 +7,9 @@ from annoying.decorators import ajax_request, render_to
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 import hunspell
+import io
+import csv
+
 
 NUMBER_OF_WORDS_PER_LISTING = 25
 HUNSPELL_PATH = '/usr/share/hunspell/'
@@ -15,12 +18,19 @@ HUNSPELL_NAME = {'fr': 'fr_CA', 'en': 'en_US'}
 
 class AnkiExportView(TemplateView):
     template_name = 'anki_export.html'
-    # content_type = 'text/plain'
+    content_type = 'application/text; charset=utf-8'
 
     def get_context_data(self, language):
         words = Word.objects.filter(export_to_anki=True,
                                     language__short_name=language)
-        return {'words': words}
+        output = io.StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+
+        for word in words:
+            # I don't know why we need strip() here but on one occasion a new line was introduced and I couldn't find where it came from.
+            row = [word.word_display.strip(), word.translation_display.strip()]
+            writer.writerow(row)
+        return {'csv': output.getvalue()}
 
 
 class LanguageView(TemplateView):
@@ -35,7 +45,7 @@ class LanguageView(TemplateView):
 class HomeView(TemplateView):
     template_name = 'home.html'
 
-    def get_context_data(self, language):
+    def get_context_data(self):
         languages = Language.objects.all()
         return {'languages': languages}
 
