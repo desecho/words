@@ -38,7 +38,10 @@ class LanguageView(TemplateView):
 
     def get_context_data(self, language):
         words = Word.objects.filter(language__short_name=language)
-        stats = {'total': len(words)}
+        stats = {'total': len(words),
+        'known': len(words.filter(known=True)),
+        'exported_to_anki': len(words.filter(exported_to_anki=True))
+        }
         return {'stats': stats, 'language': language}
 
 
