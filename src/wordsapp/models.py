@@ -37,6 +37,7 @@ class Word(models.Model):
     known = models.BooleanField(default=False)
     example = models.CharField(max_length=255, null=True, blank=True)
 
+    @property
     def word_display(self):
         if self.gender is not None:
             if self.gender == 0:
@@ -62,6 +63,7 @@ class Word(models.Model):
             example = ''
         return self.word + preposition + gender + transcription + f' ({self.part_of_speech})' + example
 
+    @property
     def translation_display(self):
         if self.definition:
             definition = ' ' + self.definition
