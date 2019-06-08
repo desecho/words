@@ -23,7 +23,6 @@ class Word(models.Model):
     theme = models.ForeignKey(Theme, models.SET_NULL, null=True, blank=True)
     word = models.CharField(max_length=255)
     translation = models.CharField(max_length=255)
-    definition = models.CharField(max_length=255, null=True, blank=True)
     transcription = models.CharField(max_length=255, null=True, blank=True)
     synonyms = models.IntegerField(default=0)
     part_of_speech = models.CharField(max_length=10)
@@ -66,14 +65,6 @@ class Word(models.Model):
         else:
             example = ''
         return self.word + preposition + gender + transcription + f' ({self.part_of_speech})' + gender_exception + example
-
-    @property
-    def translation_display(self):
-        if self.definition:
-            definition = ' ' + self.definition
-        else:
-            definition = ''
-        return self.translation + definition
 
     def __unicode__(self):
         return self.word

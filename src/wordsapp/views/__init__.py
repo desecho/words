@@ -28,7 +28,7 @@ class AnkiExportView(TemplateView):
 
         for word in words:
             # I don't know why we need strip() here but on one occasion a new line was introduced and I couldn't find where it came from.
-            row = [word.word_display.strip(), word.translation_display.strip()]
+            row = [word.word_display.strip(), word.translation.strip()]
             writer.writerow(row)
         return {'csv': output.getvalue()}
 
