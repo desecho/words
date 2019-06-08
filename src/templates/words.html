@@ -9,7 +9,7 @@
                 <span>{{ word.word_display }}</span>
             </td>
             <td class="translation">
-              <span @click="showTranslation" data-translation="{{ word.translation_display }}">******</span>
+              <span @click="showTranslation" data-translation="{{ word.translation }}">******</span>
                 {% comment %} {% for synonym in word.synonyms %}
                     <span id="translationMask{{ synonym.id }}">***</span>
                     <span id="translation{{ synonym.id }}" class="translation">{{ synonym.word_display }}</span>
