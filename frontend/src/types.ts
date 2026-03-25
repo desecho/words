@@ -10,7 +10,7 @@ export interface JWTDecoded {
 }
 
 export type StudyLanguage = "en" | "fr";
-export type StudyGrade = "incorrect" | "correct";
+export type StudyGrade = "incorrect" | "correct" | "ignore";
 
 export interface StudyLanguageSummary {
     due: number;
@@ -24,6 +24,7 @@ export interface StudySummary {
 
 export interface StudyCard {
     answer: string;
+    can_ignore: boolean;
     comment: string;
     language: StudyLanguage;
     part_of_speech_abbreviation: string;
@@ -49,7 +50,7 @@ export interface StudyReviewResponse {
         grade: StudyGrade;
         interval_days: number;
         language: StudyLanguage;
-        quality: number;
+        quality: number | null;
         record_id: number;
         repetition: number;
     };

@@ -61,3 +61,69 @@ def test_binary_study_grade_migration_maps_existing_values() -> None:
     )
 
     assert migrated_grades == ["incorrect", "correct", "correct"]
+
+
+@pytest.mark.django_db(transaction=True)
+def test_ignore_correct_study_progress_migration_marks_only_correct_rows() -> None:
+    """Only study progress rows with a correct last grade should be ignored."""
+    old_target = [("wordsapp", "0008_studyprogress_ignore")]
+    new_target = [("wordsapp", "0009_ignore_correct_study_progress")]
+
+    executor = MigrationExecutor(connection)
+    executor.migrate(old_target)
+    old_apps = executor.loader.project_state(old_target).apps
+
+    User = old_apps.get_model("wordsapp", "User")
+    PartOfSpeech = old_apps.get_model("wordsapp", "PartOfSpeech")
+    Word = old_apps.get_model("wordsapp", "Word")
+    Record = old_apps.get_model("wordsapp", "Record")
+    StudyProgress = old_apps.get_model("wordsapp", "StudyProgress")
+
+    user = User.objects.create(username="learner")
+    noun = PartOfSpeech.objects.create(name="noun", abbreviation="n")
+
+    seeded_progress_ids: list[int] = []
+    for index, (grade, ignore) in enumerate(
+        [
+            ("correct", False),
+            ("incorrect", False),
+            ("ignore", True),
+            ("", False),
+        ],
+        start=1,
+    ):
+        word = Word.objects.create(
+            user_added=user,
+            en=f"word-{index}",
+            fr=f"mot-{index}",
+            ru=f"слово-{index}",
+            part_of_speech=noun,
+        )
+        record = Record.objects.create(user=user, word=word)
+        progress = StudyProgress.objects.create(
+            user=user,
+            record=record,
+            language="en" if index % 2 else "fr",
+            due_at=timezone.now(),
+            ignore=ignore,
+            last_grade=grade,
+        )
+        seeded_progress_ids.append(progress.pk)
+
+    executor = MigrationExecutor(connection)
+    executor.migrate(new_target)
+    new_apps = executor.loader.project_state(new_target).apps
+    NewStudyProgress = new_apps.get_model("wordsapp", "StudyProgress")
+
+    migrated_progress = list(
+        NewStudyProgress.objects.filter(pk__in=seeded_progress_ids)
+        .order_by("pk")
+        .values_list("last_grade", "ignore")
+    )
+
+    assert migrated_progress == [
+        ("correct", True),
+        ("incorrect", False),
+        ("ignore", True),
+        ("", False),
+    ]

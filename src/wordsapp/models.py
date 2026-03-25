@@ -3,6 +3,7 @@
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.db.models import (
     CASCADE,
+    BooleanField,
     CharField,
     DateTimeField,
     FloatField,
@@ -109,6 +110,7 @@ class StudyGrade(TextChoices):
 
     INCORRECT = "incorrect", "Incorrect"
     CORRECT = "correct", "Correct"
+    IGNORE = "ignore", "Ignore"
 
 
 class StudyProgress(Model):
@@ -117,6 +119,7 @@ class StudyProgress(Model):
     user = ForeignKey(User, CASCADE, related_name="study_progresses")
     record = ForeignKey(Record, CASCADE, related_name="study_progresses")
     language = CharField(max_length=2, choices=StudyLanguage.choices)
+    ignore = BooleanField(default=False)
     repetition = PositiveIntegerField(default=0)
     interval_days = PositiveIntegerField(default=0)
     easiness_factor = FloatField(default=2.5)

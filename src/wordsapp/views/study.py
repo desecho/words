@@ -9,6 +9,7 @@ from django.db import transaction
 from django.db.models import Exists, F, OuterRef, Q, QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -70,6 +71,7 @@ def due_progress_queryset(
             user=user,
             language=language,
             due_at__lte=now,
+            ignore=False,
         )
         .select_related("record__word__part_of_speech")
         .filter(
@@ -81,7 +83,12 @@ def due_progress_queryset(
     )
 
 
-def build_card_payload(record: Record, language: str) -> dict[str, object]:
+def build_card_payload(
+    record: Record,
+    language: str,
+    *,
+    can_ignore: bool,
+) -> dict[str, object]:
     """Build the flashcard payload for the frontend."""
     prompt_word = record.word.en if language == StudyLanguage.ENGLISH else record.word.fr
     part_of_speech_abbreviation = record.word.part_of_speech.abbreviation
@@ -91,6 +98,7 @@ def build_card_payload(record: Record, language: str) -> dict[str, object]:
         prompt = f"{prompt} - {comment}"
     return {
         "answer": record.word.ru,
+        "can_ignore": can_ignore,
         "comment": comment,
         "language": language,
         "part_of_speech_abbreviation": part_of_speech_abbreviation,
@@ -112,7 +120,7 @@ def get_next_card(user: User, language: str, now: datetime) -> dict[str, object]
         .first()
     )
     if due_progress is not None:
-        return build_card_payload(due_progress.record, language)
+        return build_card_payload(due_progress.record, language, can_ignore=False)
 
     unseen_record = (
         unseen_records_queryset(user, language)
@@ -125,7 +133,7 @@ def get_next_card(user: User, language: str, now: datetime) -> dict[str, object]
     )
     if unseen_record is None:
         return None
-    return build_card_payload(unseen_record, language)
+    return build_card_payload(unseen_record, language, can_ignore=True)
 
 
 def get_summary_payload(user: User, now: datetime) -> dict[str, dict[str, object]]:
@@ -215,7 +223,7 @@ class StudyReviewView(APIView):
         )
 
         with transaction.atomic():
-            progress, _created = (
+            progress, created = (
                 StudyProgress.objects.select_for_update().get_or_create(
                     user=request.user,
                     record=record,
@@ -223,8 +231,19 @@ class StudyReviewView(APIView):
                     defaults={"due_at": now},
                 )
             )
-            apply_sm2_review(progress, grade, now)
-            progress.save()
+            if progress.ignore:
+                raise ValidationError({"grade": ["Ignored cards cannot be reviewed."]})
+
+            if grade == StudyGrade.IGNORE:
+                if not created:
+                    raise ValidationError({"grade": ["Only new cards can be ignored."]})
+                progress.ignore = True
+                progress.last_grade = StudyGrade.IGNORE
+                progress.last_reviewed_at = now
+                progress.save(update_fields=["ignore", "last_grade", "last_reviewed_at"])
+            else:
+                apply_sm2_review(progress, grade, now)
+                progress.save()
             next_card = get_next_card(request.user, language, now)
 
         return Response(

@@ -73,13 +73,14 @@ class StudyProgressAdmin(ModelAdmin):
         "record",
         "user",
         "language",
+        "ignore",
         "repetition",
         "interval_days",
         "easiness_factor",
         "due_at",
         "last_grade",
     )
-    list_filter = ("language", "last_grade")
+    list_filter = ("language", "ignore", "last_grade")
     list_select_related = ("record__word", "user")
     search_fields = (
         "record__word__en",

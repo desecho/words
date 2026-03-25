@@ -69,7 +69,7 @@
               v-for="grade in gradeOptions"
               :key="grade.value"
               :color="grade.color"
-              :disabled="!revealed || reviewLoading"
+              :disabled="isGradeDisabled(grade)"
               :loading="reviewLoading && pendingGrade === grade.value"
               size="large"
               :variant="grade.variant"
@@ -129,20 +129,30 @@ const languageOptions: Array<{
 const gradeOptions: Array<{
     color: string;
     label: string;
+    requiresIgnoreableCard: boolean;
     value: StudyGrade;
     variant: "flat" | "outlined";
 }> = [
     {
         color: "primary",
         label: "Incorrect",
+        requiresIgnoreableCard: false,
         value: "incorrect",
         variant: "outlined",
     },
     {
         color: "secondary",
         label: "Correct",
+        requiresIgnoreableCard: false,
         value: "correct",
         variant: "flat",
+    },
+    {
+        color: "secondary",
+        label: "Ignore",
+        requiresIgnoreableCard: true,
+        value: "ignore",
+        variant: "outlined",
     },
 ];
 
@@ -201,6 +211,9 @@ async function submitGrade(grade: StudyGrade): Promise<void> {
     if (card.value === null || !revealed.value) {
         return;
     }
+    if (grade === "ignore" && !card.value.can_ignore) {
+        return;
+    }
 
     pendingGrade.value = grade;
 
@@ -232,6 +245,16 @@ watch(selectedLanguage, async (language, previousLanguage) => {
 onMounted(async () => {
     await Promise.all([loadSummary(), loadCard(selectedLanguage.value)]);
 });
+
+function isGradeDisabled(
+    grade: (typeof gradeOptions)[number],
+): boolean {
+    return (
+        !revealed.value ||
+        reviewLoading.value ||
+        (grade.requiresIgnoreableCard && card.value?.can_ignore === false)
+    );
+}
 </script>
 
 <style scoped>

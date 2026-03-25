@@ -178,6 +178,7 @@ def test_next_card_prefers_due_cards_and_formats_prompt(
     assert response.json() == {
         "card": {
             "answer": "кот",
+            "can_ignore": False,
             "comment": "",
             "language": "en",
             "part_of_speech_abbreviation": "n",
@@ -211,6 +212,7 @@ def test_next_card_includes_comment_in_prompt_when_present(
     assert response.json() == {
         "card": {
             "answer": "кот",
+            "can_ignore": True,
             "comment": "domestic animal",
             "language": "en",
             "part_of_speech_abbreviation": "n",
@@ -273,6 +275,7 @@ def test_next_card_skips_ineligible_records_and_orders_unseen_by_frequency(
     response = api_client.get("/study/next-card/", {"language": "fr"})
 
     assert response.status_code == 200
+    assert response.json()["card"]["can_ignore"] is True
     assert response.json()["card"]["record_id"] == low_frequency_record.pk
     assert response.json()["card"]["prompt"] == "oiseau (n)"
 
@@ -312,6 +315,7 @@ def test_review_creates_progress_and_returns_next_card(
 
     assert response.status_code == 200
     payload = response.json()
+    assert payload["next_card"]["can_ignore"] is True
     assert payload["next_card"]["record_id"] == next_record.pk
     assert payload["review"]["grade"] == "correct"
     assert payload["review"]["interval_days"] == 1
@@ -406,5 +410,144 @@ def test_study_progress_is_independent_per_language(
 
     assert review_response.status_code == 200
     assert next_card_response.status_code == 200
+    assert next_card_response.json()["card"]["can_ignore"] is True
     assert next_card_response.json()["card"]["record_id"] == record.pk
     assert StudyProgress.objects.filter(user=user, record=record).count() == 1
+
+
+@pytest.mark.django_db
+def test_ignore_review_creates_ignored_progress_and_advances_to_next_card(
+    api_client: APIClient,
+    user: User,
+    noun: PartOfSpeech,
+) -> None:
+    """Ignoring a new card should hide it from study and move on."""
+    ignored_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="cat",
+        ru="кот",
+        fr="chat",
+        frequency=10,
+    )
+    next_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="dog",
+        ru="собака",
+        fr="chien",
+        frequency=20,
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.post(
+        "/study/review/",
+        {"grade": "ignore", "language": "en", "record_id": ignored_record.pk},
+        format="json",
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["next_card"]["can_ignore"] is True
+    assert payload["next_card"]["record_id"] == next_record.pk
+    assert payload["review"]["grade"] == "ignore"
+    assert payload["review"]["quality"] is None
+
+    progress = StudyProgress.objects.get(
+        user=user,
+        record=ignored_record,
+        language=StudyLanguage.ENGLISH,
+    )
+    assert progress.ignore is True
+    assert progress.repetition == 0
+    assert progress.interval_days == 0
+    assert progress.total_reviews == 0
+    assert progress.successful_reviews == 0
+    assert progress.last_grade == "ignore"
+    assert progress.last_reviewed_at is not None
+
+    summary_response = api_client.get("/study/summary/")
+    assert summary_response.status_code == 200
+    assert summary_response.json()["summary"]["en"]["unseen"] == 1
+
+
+@pytest.mark.django_db
+def test_ignore_review_is_rejected_for_existing_progress(
+    api_client: APIClient,
+    user: User,
+    noun: PartOfSpeech,
+) -> None:
+    """Only unseen cards should accept the Ignore action."""
+    record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="cat",
+        ru="кот",
+        fr="chat",
+        frequency=10,
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=record,
+        language=StudyLanguage.ENGLISH,
+        due_at=timezone.now() - timedelta(days=1),
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.post(
+        "/study/review/",
+        {"grade": "ignore", "language": "en", "record_id": record.pk},
+        format="json",
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {"grade": ["Only new cards can be ignored."]}
+
+
+@pytest.mark.django_db
+def test_study_summary_excludes_ignored_cards_from_due_counts(
+    api_client: APIClient,
+    user: User,
+    noun: PartOfSpeech,
+) -> None:
+    """Ignored cards should not be counted as due."""
+    ignored_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="cat",
+        ru="кот",
+        fr="chat",
+        frequency=10,
+    )
+    visible_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="dog",
+        ru="собака",
+        fr="chien",
+        frequency=20,
+    )
+    now = timezone.now()
+    StudyProgress.objects.create(
+        user=user,
+        record=ignored_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now - timedelta(days=1),
+        ignore=True,
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=visible_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now - timedelta(days=1),
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.get("/study/summary/")
+
+    assert response.status_code == 200
+    assert response.json()["summary"]["en"] == {
+        "due": 1,
+        "label": "English",
+        "unseen": 0,
+    }
