@@ -14,11 +14,11 @@ import ChangePasswordView from "./views/ChangePasswordView.vue";
 import LandingView from "./views/LandingView.vue";
 import LoginView from "./views/LoginView.vue";
 import LogoutView from "./views/LogoutView.vue";
-import PreferencesView from "./views/PreferencesView.vue";
 import RegisterSuccessView from "./views/RegisterSuccessView.vue";
 import RegistrationView from "./views/RegistrationView.vue";
 import ResetPasswordRequestView from "./views/ResetPasswordRequestView.vue";
 import ResetPasswordView from "./views/ResetPasswordView.vue";
+import StudyView from "./views/StudyView.vue";
 import VerifyUserView from "./views/VerifyUserView.vue";
 
 function authProps(route: RouteLocationNormalized): AuthProps {
@@ -51,13 +51,13 @@ export const router = createRouter({
             component: ResetPasswordRequestView,
             path: "/reset-password-request",
         },
-        { component: PreferencesView, path: "/preferences" },
+        { component: StudyView, path: "/study" },
         { component: ChangePasswordView, path: "/change-password" },
     ],
 });
 
 router.beforeEach(async (to) => {
-    const privatePages = ["/preferences", "/change-password"];
+    const privatePages = ["/study", "/change-password"];
     const authRequired = privatePages.includes(to.path);
     const authStore = useAuthStore();
 

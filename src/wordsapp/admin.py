@@ -2,7 +2,7 @@
 
 from django.contrib.admin import ModelAdmin, register
 
-from wordsapp.models import PartOfSpeech, Record, Tag, Word
+from wordsapp.models import PartOfSpeech, Record, StudyProgress, Tag, Word
 
 
 @register(PartOfSpeech)
@@ -59,6 +59,33 @@ class RecordAdmin(ModelAdmin):
         "word__en",
         "word__ru",
         "word__fr",
+        "user__username",
+        "user__first_name",
+        "user__last_name",
+    )
+
+
+@register(StudyProgress)
+class StudyProgressAdmin(ModelAdmin):
+    """Admin configuration for study progress."""
+
+    list_display = (
+        "record",
+        "user",
+        "language",
+        "repetition",
+        "interval_days",
+        "easiness_factor",
+        "due_at",
+        "last_grade",
+    )
+    list_filter = ("language", "last_grade")
+    list_select_related = ("record__word", "user")
+    search_fields = (
+        "record__word__en",
+        "record__word__fr",
+        "record__word__ru",
+        "record__word__part_of_speech__abbreviation",
         "user__username",
         "user__first_name",
         "user__last_name",

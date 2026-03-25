@@ -31,7 +31,7 @@ export const useAuthStore = defineStore("auth", {
             };
 
             initAxios();
-            void router.push("/preferences");
+            void router.push("/study");
         },
         logout(): void {
             this.user = { isLoggedIn: false };

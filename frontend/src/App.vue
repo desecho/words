@@ -10,7 +10,7 @@
 
       <div class="nav-actions">
         <v-btn to="/" variant="text">Home</v-btn>
-        <v-btn v-if="isLoggedIn" to="/preferences" variant="text">Account</v-btn>
+        <v-btn v-if="isLoggedIn" to="/study" variant="text">Study</v-btn>
         <v-btn v-if="isLoggedIn" to="/change-password" variant="text">Password</v-btn>
         <v-btn v-if="!isLoggedIn" to="/login" variant="text">Login</v-btn>
         <v-btn v-if="!isLoggedIn" color="primary" to="/register" variant="flat">Register</v-btn>

@@ -6,7 +6,8 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from wordsapp.views.health import HealthView
-from wordsapp.views.user import UserCheckEmailAvailabilityView, UserPreferencesView
+from wordsapp.views.study import StudyNextCardView, StudyReviewView, StudySummaryView
+from wordsapp.views.user import UserCheckEmailAvailabilityView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -19,9 +20,7 @@ urlpatterns = [
         UserCheckEmailAvailabilityView.as_view(),
         name="check_email_availability",
     ),
-    path(
-        "user/preferences/",
-        UserPreferencesView.as_view(),
-        name="user_preferences",
-    ),
+    path("study/summary/", StudySummaryView.as_view(), name="study_summary"),
+    path("study/next-card/", StudyNextCardView.as_view(), name="study_next_card"),
+    path("study/review/", StudyReviewView.as_view(), name="study_review"),
 ]

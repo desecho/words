@@ -1,7 +1,18 @@
 """Models."""
 
 from django.contrib.auth.models import AbstractUser, AnonymousUser
-from django.db.models import CASCADE, CharField, DateTimeField, ForeignKey, ManyToManyField, Model, PositiveIntegerField
+from django.db.models import (
+    CASCADE,
+    CharField,
+    DateTimeField,
+    FloatField,
+    ForeignKey,
+    ManyToManyField,
+    Model,
+    PositiveIntegerField,
+    TextChoices,
+    UniqueConstraint,
+)
 from django.http import HttpRequest
 
 
@@ -67,6 +78,7 @@ class Word(Model):
     tags = ManyToManyField(Tag, related_name="words", blank=True)
     date_added = DateTimeField(auto_now_add=True)
     frequency = PositiveIntegerField(unique=True, null=True, blank=True)
+    comment = CharField(max_length=255, blank=True)
 
     def __str__(self) -> str:
         """Return string representation."""
@@ -83,3 +95,49 @@ class Record(Model):
     def __str__(self) -> str:
         """Return string representation."""
         return f"{self.user} - {self.word}"
+
+
+class StudyLanguage(TextChoices):
+    """Supported study languages."""
+
+    ENGLISH = "en", "English"
+    FRENCH = "fr", "French"
+
+
+class StudyGrade(TextChoices):
+    """Supported self-assessment grades."""
+
+    AGAIN = "again", "Again"
+    HARD = "hard", "Hard"
+    EASY = "easy", "Easy"
+
+
+class StudyProgress(Model):
+    """Per-user spaced repetition state for a record and study language."""
+
+    user = ForeignKey(User, CASCADE, related_name="study_progresses")
+    record = ForeignKey(Record, CASCADE, related_name="study_progresses")
+    language = CharField(max_length=2, choices=StudyLanguage.choices)
+    repetition = PositiveIntegerField(default=0)
+    interval_days = PositiveIntegerField(default=0)
+    easiness_factor = FloatField(default=2.5)
+    due_at = DateTimeField()
+    last_reviewed_at = DateTimeField(null=True, blank=True)
+    last_quality = PositiveIntegerField(null=True, blank=True)
+    last_grade = CharField(max_length=16, choices=StudyGrade.choices, blank=True)
+    total_reviews = PositiveIntegerField(default=0)
+    successful_reviews = PositiveIntegerField(default=0)
+
+    class Meta:
+        """Meta options for StudyProgress."""
+
+        constraints = [
+            UniqueConstraint(
+                fields=("user", "record", "language"),
+                name="wordsapp_studyprogress_user_record_language_uniq",
+            )
+        ]
+
+    def __str__(self) -> str:
+        """Return string representation."""
+        return f"{self.user} - {self.record} - {self.language}"

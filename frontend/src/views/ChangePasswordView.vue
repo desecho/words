@@ -71,7 +71,7 @@ async function onSubmit(): Promise<void> {
             "old_password": oldPassword.value,
         });
         $toast.success("Password changed.");
-        await router.push("/preferences");
+        await router.push("/study");
   } catch (error: unknown) {
     console.error(error);
     $toast.error("Unable to change the password.");
