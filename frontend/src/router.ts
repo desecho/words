@@ -11,6 +11,7 @@ import {
     isValidToken,
 } from "./types/common";
 import ChangePasswordView from "./views/ChangePasswordView.vue";
+import AddWordView from "./views/AddWordView.vue";
 import LandingView from "./views/LandingView.vue";
 import LoginView from "./views/LoginView.vue";
 import LogoutView from "./views/LogoutView.vue";
@@ -52,12 +53,13 @@ export const router = createRouter({
             path: "/reset-password-request",
         },
         { component: StudyView, path: "/study" },
+        { component: AddWordView, path: "/words/new" },
         { component: ChangePasswordView, path: "/change-password" },
     ],
 });
 
 router.beforeEach(async (to) => {
-    const privatePages = ["/study", "/change-password"];
+    const privatePages = ["/study", "/words/new", "/change-password"];
     const authRequired = privatePages.includes(to.path);
     const authStore = useAuthStore();
 
