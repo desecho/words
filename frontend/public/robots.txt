@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /register
+Disallow: /logout
+Disallow: /reset-password
+Disallow: /reset-password-request
+Disallow: /verify-user
+Disallow: /change-password
+Disallow: /preferences
+
+Sitemap: https://words.example.com/sitemap.xml

@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: words
+data:
+  PROJECT_DOMAIN: api.words.example.com
+  ADMIN_EMAIL: admin@example.com
+  EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+  EMAIL_HOST: smtp.example.com
+  EMAIL_HOST_USER: no-reply@example.com
+  DB_ENGINE: django.db.backends.mysql
+  DB_NAME: words
+  DB_HOST: mysql
+  DB_PORT: "3306"
+  DB_USER: words
+  STATIC_URL: https://static.words.example.com/
+  DJANGO_SETTINGS_MODULE: words.settings
+  FRONTEND_URL: https://words.example.com

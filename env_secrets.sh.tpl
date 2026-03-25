@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export EMAIL_HOST_PASSWORD=

@@ -1,0 +1,166 @@
+:root {
+  color: #1e1b18;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(214, 155, 104, 0.28), transparent 28rem),
+    linear-gradient(180deg, #f7f2ea 0%, #efe4d4 100%);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.app-bar {
+  backdrop-filter: blur(10px);
+  background: rgba(247, 242, 234, 0.72) !important;
+  border-bottom: 1px solid rgba(91, 63, 45, 0.08);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brand__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: #8b4d36;
+  color: #fffaf3;
+  font-family: "Iowan Old Style", "Palatino Linotype", serif;
+  font-size: 1.25rem;
+}
+
+.brand__text {
+  font-size: 0.9rem;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.main-shell {
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.page-panel {
+  width: min(100%, 46rem);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid rgba(91, 63, 45, 0.08);
+  background: rgba(255, 250, 243, 0.9);
+  box-shadow: 0 30px 80px rgba(74, 49, 33, 0.08);
+}
+
+.page-panel__eyebrow {
+  margin-bottom: 0.75rem;
+  color: #8b4d36;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.page-panel__title {
+  margin: 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.05;
+}
+
+.page-panel__description {
+  max-width: 42rem;
+  margin: 1rem 0 0;
+  color: rgba(30, 27, 24, 0.78);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.page-panel__body {
+  margin-top: 2rem;
+}
+
+.form-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.copy-block {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hero-card {
+  padding: 1.25rem;
+  border: 1px solid rgba(91, 63, 45, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.hero-card h2 {
+  margin: 0 0 0.75rem;
+  font-family: "Iowan Old Style", "Palatino Linotype", serif;
+}
+
+.hero-card ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .main-shell {
+    padding-top: 2rem;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-actions {
+    justify-content: flex-end;
+  }
+}
