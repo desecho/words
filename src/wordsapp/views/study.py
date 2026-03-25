@@ -19,9 +19,8 @@ from wordsapp.serializers import StudyLanguageQuerySerializer, StudyReviewSerial
 MIN_EASINESS_FACTOR: Final[float] = 1.3
 INITIAL_EASINESS_FACTOR: Final[float] = 2.5
 STUDY_QUALITY_BY_GRADE: Final[dict[str, int]] = {
-    StudyGrade.AGAIN: 2,
-    StudyGrade.HARD: 4,
-    StudyGrade.EASY: 5,
+    StudyGrade.INCORRECT: 2,
+    StudyGrade.CORRECT: 5,
 }
 
 

@@ -107,9 +107,8 @@ class StudyLanguage(TextChoices):
 class StudyGrade(TextChoices):
     """Supported self-assessment grades."""
 
-    AGAIN = "again", "Again"
-    HARD = "hard", "Hard"
-    EASY = "easy", "Easy"
+    INCORRECT = "incorrect", "Incorrect"
+    CORRECT = "correct", "Correct"
 
 
 class StudyProgress(Model):

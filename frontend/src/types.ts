@@ -10,7 +10,7 @@ export interface JWTDecoded {
 }
 
 export type StudyLanguage = "en" | "fr";
-export type StudyGrade = "again" | "hard" | "easy";
+export type StudyGrade = "incorrect" | "correct";
 
 export interface StudyLanguageSummary {
     due: number;

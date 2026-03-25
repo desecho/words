@@ -132,9 +132,18 @@ const gradeOptions: Array<{
     value: StudyGrade;
     variant: "flat" | "outlined";
 }> = [
-    { color: "primary", label: "Again", value: "again", variant: "outlined" },
-    { color: "primary", label: "Hard", value: "hard", variant: "flat" },
-    { color: "secondary", label: "Easy", value: "easy", variant: "flat" },
+    {
+        color: "primary",
+        label: "Incorrect",
+        value: "incorrect",
+        variant: "outlined",
+    },
+    {
+        color: "secondary",
+        label: "Correct",
+        value: "correct",
+        variant: "flat",
+    },
 ];
 
 const selectedLanguage = ref<StudyLanguage>("en");

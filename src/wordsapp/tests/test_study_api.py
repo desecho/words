@@ -305,7 +305,7 @@ def test_review_creates_progress_and_returns_next_card(
     before_request = timezone.now()
     response = api_client.post(
         "/study/review/",
-        {"grade": "easy", "language": "en", "record_id": reviewed_record.pk},
+        {"grade": "correct", "language": "en", "record_id": reviewed_record.pk},
         format="json",
     )
     after_request = timezone.now()
@@ -313,7 +313,7 @@ def test_review_creates_progress_and_returns_next_card(
     assert response.status_code == 200
     payload = response.json()
     assert payload["next_card"]["record_id"] == next_record.pk
-    assert payload["review"]["grade"] == "easy"
+    assert payload["review"]["grade"] == "correct"
     assert payload["review"]["interval_days"] == 1
     assert payload["review"]["quality"] == 5
     assert payload["review"]["repetition"] == 1
@@ -336,12 +336,12 @@ def test_review_creates_progress_and_returns_next_card(
 
 
 @pytest.mark.django_db
-def test_review_again_resets_sm2_progress(
+def test_review_incorrect_resets_sm2_progress(
     api_client: APIClient,
     user: User,
     noun: PartOfSpeech,
 ) -> None:
-    """An Again review should reset repetition and interval."""
+    """An Incorrect review should reset repetition and interval."""
     record = create_record(
         owner=user,
         part_of_speech=noun,
@@ -365,7 +365,7 @@ def test_review_again_resets_sm2_progress(
     api_client.force_authenticate(user=user)
     response = api_client.post(
         "/study/review/",
-        {"grade": "again", "language": "en", "record_id": record.pk},
+        {"grade": "incorrect", "language": "en", "record_id": record.pk},
         format="json",
     )
 
@@ -374,7 +374,7 @@ def test_review_again_resets_sm2_progress(
     assert progress.repetition == 0
     assert progress.interval_days == 1
     assert progress.last_quality == 2
-    assert progress.last_grade == "again"
+    assert progress.last_grade == "incorrect"
     assert progress.easiness_factor == pytest.approx(2.28)
     assert progress.total_reviews == 4
     assert progress.successful_reviews == 2
@@ -399,7 +399,7 @@ def test_study_progress_is_independent_per_language(
     api_client.force_authenticate(user=user)
     review_response = api_client.post(
         "/study/review/",
-        {"grade": "hard", "language": "en", "record_id": record.pk},
+        {"grade": "correct", "language": "en", "record_id": record.pk},
         format="json",
     )
     next_card_response = api_client.get("/study/next-card/", {"language": "fr"})
