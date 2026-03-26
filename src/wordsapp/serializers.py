@@ -1,12 +1,9 @@
 """Serializers used by wordsapp."""
 
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_registration.api.serializers import DefaultRegisterUserSerializer
 
-from wordsapp.models import PartOfSpeech, StudyGrade, StudyLanguage, Text
-
-User = get_user_model()
+from wordsapp.models import PartOfSpeech, StudyGrade, StudyLanguage, Text, User
 
 
 class WordsRegisterSerializer(DefaultRegisterUserSerializer):
@@ -21,13 +18,13 @@ class WordsRegisterSerializer(DefaultRegisterUserSerializer):
         return value
 
 
-class StudyLanguageQuerySerializer(serializers.Serializer[User]):
+class StudyLanguageQuerySerializer(serializers.Serializer[object]):
     """Validate the study language query parameter."""
 
     language = serializers.ChoiceField(choices=StudyLanguage.choices)
 
 
-class StudyReviewSerializer(serializers.Serializer[User]):
+class StudyReviewSerializer(serializers.Serializer[object]):
     """Validate a study review submission."""
 
     record_id = serializers.IntegerField(min_value=1)
@@ -45,7 +42,7 @@ class PartOfSpeechSerializer(serializers.ModelSerializer[PartOfSpeech]):
         fields = ("id", "name", "abbreviation")
 
 
-class WordCreateSerializer(serializers.Serializer[User]):
+class WordCreateSerializer(serializers.Serializer[object]):
     """Validate a UI word-creation request."""
 
     en = serializers.CharField(required=False, allow_blank=True, max_length=255)
@@ -80,7 +77,7 @@ class TextSerializer(serializers.ModelSerializer[Text]):
         fields = ("id", "name", "language", "content", "date_added")
 
 
-class TextCreateSerializer(serializers.Serializer[User]):
+class TextCreateSerializer(serializers.Serializer[object]):
     """Validate a UI text-creation request."""
 
     name = serializers.CharField(max_length=255)

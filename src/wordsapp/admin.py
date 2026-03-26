@@ -1,12 +1,29 @@
 """Admin configuration for wordsapp."""
 
+from typing import TYPE_CHECKING, TypeAlias
+
 from django.contrib.admin import ModelAdmin, register
 
 from wordsapp.models import PartOfSpeech, Record, StudyProgress, Tag, Text, Word
 
+if TYPE_CHECKING:
+    PartOfSpeechAdminBase: TypeAlias = ModelAdmin[PartOfSpeech]
+    TagAdminBase: TypeAlias = ModelAdmin[Tag]
+    WordAdminBase: TypeAlias = ModelAdmin[Word]
+    RecordAdminBase: TypeAlias = ModelAdmin[Record]
+    TextAdminBase: TypeAlias = ModelAdmin[Text]
+    StudyProgressAdminBase: TypeAlias = ModelAdmin[StudyProgress]
+else:
+    PartOfSpeechAdminBase = ModelAdmin
+    TagAdminBase = ModelAdmin
+    WordAdminBase = ModelAdmin
+    RecordAdminBase = ModelAdmin
+    TextAdminBase = ModelAdmin
+    StudyProgressAdminBase = ModelAdmin
+
 
 @register(PartOfSpeech)
-class PartOfSpeechAdmin(ModelAdmin):
+class PartOfSpeechAdmin(PartOfSpeechAdminBase):
     """Admin configuration for parts of speech."""
 
     list_display = ("name", "abbreviation")
@@ -14,7 +31,7 @@ class PartOfSpeechAdmin(ModelAdmin):
 
 
 @register(Tag)
-class TagAdmin(ModelAdmin):
+class TagAdmin(TagAdminBase):
     """Admin configuration for tags."""
 
     list_display = ("name",)
@@ -22,7 +39,7 @@ class TagAdmin(ModelAdmin):
 
 
 @register(Word)
-class WordAdmin(ModelAdmin):
+class WordAdmin(WordAdminBase):
     """Admin configuration for words."""
 
     filter_horizontal = ("tags",)
@@ -49,7 +66,7 @@ class WordAdmin(ModelAdmin):
 
 
 @register(Record)
-class RecordAdmin(ModelAdmin):
+class RecordAdmin(RecordAdminBase):
     """Admin configuration for records."""
 
     list_display = ("word", "user", "date_added")
@@ -66,7 +83,7 @@ class RecordAdmin(ModelAdmin):
 
 
 @register(Text)
-class TextAdmin(ModelAdmin):
+class TextAdmin(TextAdminBase):
     """Admin configuration for texts."""
 
     list_display = ("name", "language", "user_added", "date_added")
@@ -82,7 +99,7 @@ class TextAdmin(ModelAdmin):
 
 
 @register(StudyProgress)
-class StudyProgressAdmin(ModelAdmin):
+class StudyProgressAdmin(StudyProgressAdminBase):
     """Admin configuration for study progress."""
 
     list_display = (

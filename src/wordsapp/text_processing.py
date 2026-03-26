@@ -28,7 +28,7 @@ ENGLISH_S_CONTRACTION_BASES = frozenset(
     }
 )
 ENGLISH_IRREGULAR_CONTRACTIONS = frozenset({"ain't", "let's", "shan't", "won't"})
-ARTICLE_TOKENS_BY_LANGUAGE = {
+ARTICLE_TOKENS_BY_LANGUAGE: dict[str, frozenset[str]] = {
     StudyLanguage.ENGLISH: frozenset({"a", "an", "the"}),
     StudyLanguage.FRENCH: frozenset(
         {"le", "la", "les", "l'", "un", "une", "des", "du", "au", "aux"}
@@ -38,7 +38,7 @@ FRENCH_CONTRACTION_PREFIXES = frozenset({"c'", "d'", "j'", "m'", "n'", "qu'", "s
 FRENCH_ELIDED_PREFIXES = tuple(
     sorted({"l'"} | FRENCH_CONTRACTION_PREFIXES, key=len, reverse=True)
 )
-NUMBER_WORDS_BY_LANGUAGE = {
+NUMBER_WORDS_BY_LANGUAGE: dict[str, frozenset[str]] = {
     StudyLanguage.ENGLISH: frozenset(
         {
             "zero",

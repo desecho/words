@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 
 from wordsapp.models import PartOfSpeech, Record, Word
 from wordsapp.serializers import PartOfSpeechSerializer, WordCreateSerializer
+from wordsapp.views.utils import get_authenticated_user
 
 
 def build_created_word_payload(word: Word, record: Record) -> dict[str, object]:
@@ -48,6 +49,7 @@ class WordCreateView(APIView):
 
     def post(self, request: Request) -> Response:
         """Create a word and a matching record for the authenticated user."""
+        user = get_authenticated_user(request)
         serializer = WordCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
@@ -55,14 +57,14 @@ class WordCreateView(APIView):
         with transaction.atomic():
             part_of_speech = validated_data["part_of_speech"]
             word = Word.objects.create(
-                user_added=request.user,
+                user_added=user,
                 en=str(validated_data.get("en", "")),
                 fr=str(validated_data.get("fr", "")),
                 ru=str(validated_data["ru"]),
                 comment=str(validated_data.get("comment", "")),
                 part_of_speech=part_of_speech,
             )
-            record = Record.objects.create(user=request.user, word=word)
+            record = Record.objects.create(user=user, word=word)
 
         return Response(
             build_created_word_payload(word, record),

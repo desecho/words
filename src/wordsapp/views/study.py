@@ -16,6 +16,7 @@ from rest_framework.views import APIView
 
 from wordsapp.models import Record, StudyGrade, StudyLanguage, StudyProgress, User
 from wordsapp.serializers import StudyLanguageQuerySerializer, StudyReviewSerializer
+from wordsapp.views.utils import get_authenticated_user
 
 MIN_EASINESS_FACTOR: Final[float] = 1.3
 INITIAL_EASINESS_FACTOR: Final[float] = 2.5
@@ -189,7 +190,8 @@ class StudySummaryView(APIView):
 
     def get(self, request: Request) -> Response:
         """Return due and unseen counts for the current user."""
-        return Response({"summary": get_summary_payload(request.user, timezone.now())})
+        user = get_authenticated_user(request)
+        return Response({"summary": get_summary_payload(user, timezone.now())})
 
 
 class StudyNextCardView(APIView):
@@ -197,10 +199,11 @@ class StudyNextCardView(APIView):
 
     def get(self, request: Request) -> Response:
         """Return the next card payload or an empty state."""
+        user = get_authenticated_user(request)
         serializer = StudyLanguageQuerySerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         language = cast(str, serializer.validated_data["language"])
-        card = get_next_card(request.user, language, timezone.now())
+        card = get_next_card(user, language, timezone.now())
         return Response({"card": card})
 
 
@@ -209,6 +212,7 @@ class StudyReviewView(APIView):
 
     def post(self, request: Request) -> Response:
         """Persist a review grade for a study card."""
+        user = get_authenticated_user(request)
         serializer = StudyReviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -218,14 +222,14 @@ class StudyReviewView(APIView):
         now = timezone.now()
 
         record = get_object_or_404(
-            eligible_records_queryset(request.user, language),
+            eligible_records_queryset(user, language),
             pk=record_id,
         )
 
         with transaction.atomic():
             progress, created = (
                 StudyProgress.objects.select_for_update().get_or_create(
-                    user=request.user,
+                    user=user,
                     record=record,
                     language=language,
                     defaults={"due_at": now},
@@ -244,7 +248,7 @@ class StudyReviewView(APIView):
             else:
                 apply_sm2_review(progress, grade, now)
                 progress.save()
-            next_card = get_next_card(request.user, language, now)
+            next_card = get_next_card(user, language, now)
 
         return Response(
             {

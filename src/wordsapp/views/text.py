@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from wordsapp.models import Text
 from wordsapp.serializers import TextCreateSerializer, TextSerializer
 from wordsapp.text_processing import build_text_segments
+from wordsapp.views.utils import get_authenticated_user
 
 
 class TextListCreateView(APIView):
@@ -18,17 +19,19 @@ class TextListCreateView(APIView):
 
     def get(self, request: Request) -> Response:
         """Return the current user's texts."""
+        user = get_authenticated_user(request)
         serializer = TextSerializer(
-            Text.objects.filter(user_added=request.user).order_by("-date_added", "-pk"),
+            Text.objects.filter(user_added=user).order_by("-date_added", "-pk"),
             many=True,
         )
         return Response({"texts": serializer.data})
 
     def post(self, request: Request) -> Response:
         """Create a text for the current user."""
+        user = get_authenticated_user(request)
         serializer = TextCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        text = Text.objects.create(user_added=request.user, **serializer.validated_data)
+        text = Text.objects.create(user_added=user, **serializer.validated_data)
         return Response(
             {"text": TextSerializer(text).data},
             status=status.HTTP_201_CREATED,
@@ -40,15 +43,17 @@ class TextDetailView(APIView):
 
     def get_text(self, request: Request, text_id: int) -> Text:
         """Return one text belonging to the current user."""
-        return get_object_or_404(Text.objects.filter(user_added=request.user), pk=text_id)
+        user = get_authenticated_user(request)
+        return get_object_or_404(Text.objects.filter(user_added=user), pk=text_id)
 
     def get(self, request: Request, text_id: int) -> Response:
         """Return one text and its highlighted segments."""
+        user = get_authenticated_user(request)
         text = self.get_text(request, text_id)
         return Response(
             {
                 "text": TextSerializer(text).data,
-                "segments": build_text_segments(text.content, text.language, request.user),
+                "segments": build_text_segments(text.content, text.language, user),
             }
         )
 
