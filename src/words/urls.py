@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from wordsapp.views.health import HealthView
 from wordsapp.views.study import StudyNextCardView, StudyReviewView, StudySummaryView
+from wordsapp.views.text import TextDetailView, TextListCreateView
 from wordsapp.views.user import UserCheckEmailAvailabilityView
 from wordsapp.views.word import PartOfSpeechListView, WordCreateView
 
@@ -27,6 +28,8 @@ urlpatterns = [
         name="part_of_speech_list",
     ),
     path("words/", WordCreateView.as_view(), name="word_create"),
+    path("texts/", TextListCreateView.as_view(), name="text_list_create"),
+    path("texts/<int:text_id>/", TextDetailView.as_view(), name="text_detail"),
     path("study/summary/", StudySummaryView.as_view(), name="study_summary"),
     path("study/next-card/", StudyNextCardView.as_view(), name="study_next_card"),
     path("study/review/", StudyReviewView.as_view(), name="study_review"),

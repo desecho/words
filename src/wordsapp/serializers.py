@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_registration.api.serializers import DefaultRegisterUserSerializer
 
-from wordsapp.models import PartOfSpeech, StudyGrade, StudyLanguage
+from wordsapp.models import PartOfSpeech, StudyGrade, StudyLanguage, Text
 
 User = get_user_model()
 
@@ -68,3 +68,21 @@ class WordCreateSerializer(serializers.Serializer[User]):
                 {"non_field_errors": ["Provide at least one of English or French."]}
             )
         return attrs
+
+
+class TextSerializer(serializers.ModelSerializer[Text]):
+    """Serialize a user text."""
+
+    class Meta:
+        """Text serializer options."""
+
+        model = Text
+        fields = ("id", "name", "language", "content", "date_added")
+
+
+class TextCreateSerializer(serializers.Serializer[User]):
+    """Validate a UI text-creation request."""
+
+    name = serializers.CharField(max_length=255)
+    language = serializers.ChoiceField(choices=StudyLanguage.choices)
+    content = serializers.CharField()

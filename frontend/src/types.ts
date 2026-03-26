@@ -85,3 +85,45 @@ export interface CreateWordResponse {
         ru: string;
     };
 }
+
+export interface TextItem {
+    content: string;
+    date_added: string;
+    id: number;
+    language: StudyLanguage;
+    name: string;
+}
+
+export interface TextListResponse {
+    texts: TextItem[];
+}
+
+export interface TextResponse {
+    text: TextItem;
+}
+
+export interface CreateTextRequest {
+    content: string;
+    language: StudyLanguage | null;
+    name: string;
+}
+
+export interface TextPlainSegment {
+    type: "text";
+    value: string;
+}
+
+export interface TextMatchSegment {
+    match_kind: "article" | "contraction" | "number_word" | "record";
+    normalized: string;
+    record_id: number | null;
+    type: "match";
+    value: string;
+}
+
+export type TextSegment = TextPlainSegment | TextMatchSegment;
+
+export interface TextDetailResponse {
+    segments: TextSegment[];
+    text: TextItem;
+}
