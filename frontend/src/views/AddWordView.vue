@@ -2,7 +2,7 @@
   <PagePanel
     eyebrow="Words"
     title="Add a new word"
-    description="Create a new word from the UI. A matching record for your account will be created automatically."
+    description="Create a new word from its own page, then return to your word list to manage it."
   >
     <v-form class="form-stack" @submit.prevent="onSubmit">
       <v-text-field
@@ -40,6 +40,12 @@
       </div>
 
       <div class="action-row">
+        <v-btn
+          variant="text"
+          to="/words"
+        >
+          Back to words
+        </v-btn>
         <v-btn
           color="primary"
           :disabled="loading"
@@ -81,20 +87,13 @@ type WordFormErrors = {
 
 const comment = ref("");
 const en = ref("");
+const fieldErrors = ref<WordFormErrors>(createEmptyWordFormErrors());
 const fr = ref("");
 const loading = ref(false);
 const loadingOptions = ref(false);
 const partOfSpeechId = ref<number | null>(null);
 const partOfSpeechOptions = ref<PartOfSpeechOption[]>([]);
 const ru = ref("");
-const fieldErrors = ref<WordFormErrors>({
-    comment: [],
-    en: [],
-    fr: [],
-    non_field_errors: [],
-    part_of_speech_id: [],
-    ru: [],
-});
 
 const partOfSpeechItems = computed(() =>
     partOfSpeechOptions.value.map((option) => ({
@@ -103,8 +102,8 @@ const partOfSpeechItems = computed(() =>
     })),
 );
 
-function resetFieldErrors(): void {
-    fieldErrors.value = {
+function createEmptyWordFormErrors(): WordFormErrors {
+    return {
         comment: [],
         en: [],
         fr: [],
@@ -112,6 +111,18 @@ function resetFieldErrors(): void {
         part_of_speech_id: [],
         ru: [],
     };
+}
+
+function resetFieldErrors(): void {
+    fieldErrors.value = createEmptyWordFormErrors();
+}
+
+function resetForm(): void {
+    comment.value = "";
+    en.value = "";
+    fr.value = "";
+    partOfSpeechId.value = null;
+    ru.value = "";
 }
 
 function validateForm(): boolean {
@@ -178,8 +189,10 @@ async function onSubmit(): Promise<void> {
         };
 
         await axios.post<CreateWordResponse>(getUrl("words/"), payload);
+        resetForm();
+        resetFieldErrors();
         $toast.success("Word added.");
-        await router.push("/study");
+        await router.push("/words");
     } catch (error: unknown) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response?.data) {

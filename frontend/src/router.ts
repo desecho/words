@@ -10,7 +10,6 @@ import {
     getQueryParamAsString,
     isValidToken,
 } from "./types/common";
-import AddWordView from "./views/AddWordView.vue";
 import ChangePasswordView from "./views/ChangePasswordView.vue";
 import LandingView from "./views/LandingView.vue";
 import LoginView from "./views/LoginView.vue";
@@ -23,6 +22,8 @@ import StudyView from "./views/StudyView.vue";
 import TextDetailView from "./views/TextDetailView.vue";
 import TextsView from "./views/TextsView.vue";
 import VerifyUserView from "./views/VerifyUserView.vue";
+import AddWordView from "./views/AddWordView.vue";
+import WordsView from "./views/WordsView.vue";
 
 function authProps(route: RouteLocationNormalized): AuthProps {
     return {
@@ -55,6 +56,7 @@ export const router = createRouter({
             path: "/reset-password-request",
         },
         { component: StudyView, path: "/study" },
+        { component: WordsView, path: "/words" },
         { component: AddWordView, path: "/words/new" },
         { component: TextsView, path: "/texts" },
         {
@@ -71,7 +73,7 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-    const privatePages = ["/study", "/words/new", "/change-password", "/texts"];
+    const privatePages = ["/study", "/words", "/change-password", "/texts"];
     const authRequired = privatePages.some(
         (path) => to.path === path || to.path.startsWith(`${path}/`),
     );

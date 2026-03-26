@@ -9,7 +9,7 @@ from wordsapp.views.health import HealthView
 from wordsapp.views.study import StudyNextCardView, StudyReviewView, StudySummaryView
 from wordsapp.views.text import TextDetailView, TextListCreateView
 from wordsapp.views.user import UserCheckEmailAvailabilityView
-from wordsapp.views.word import PartOfSpeechListView, WordCreateView
+from wordsapp.views.word import PartOfSpeechListView, WordDetailView, WordListCreateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,7 +27,8 @@ urlpatterns = [
         PartOfSpeechListView.as_view(),
         name="part_of_speech_list",
     ),
-    path("words/", WordCreateView.as_view(), name="word_create"),
+    path("words/", WordListCreateView.as_view(), name="word_list_create"),
+    path("words/<int:word_id>/", WordDetailView.as_view(), name="word_detail"),
     path("texts/", TextListCreateView.as_view(), name="text_list_create"),
     path("texts/<int:text_id>/", TextDetailView.as_view(), name="text_detail"),
     path("study/summary/", StudySummaryView.as_view(), name="study_summary"),

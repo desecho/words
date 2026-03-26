@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from rest_registration.api.serializers import DefaultRegisterUserSerializer
 
-from wordsapp.models import PartOfSpeech, StudyGrade, StudyLanguage, Text, User
+from wordsapp.models import PartOfSpeech, StudyGrade, StudyLanguage, Text, User, Word
 
 
 class WordsRegisterSerializer(DefaultRegisterUserSerializer):
@@ -65,6 +65,30 @@ class WordCreateSerializer(serializers.Serializer[object]):
                 {"non_field_errors": ["Provide at least one of English or French."]}
             )
         return attrs
+
+
+class WordSerializer(serializers.ModelSerializer[Word]):
+    """Serialize a word for the UI."""
+
+    part_of_speech = PartOfSpeechSerializer()
+
+    class Meta:
+        """Word serializer options."""
+
+        model = Word
+        fields = (
+            "id",
+            "ru",
+            "en",
+            "fr",
+            "comment",
+            "date_added",
+            "part_of_speech",
+        )
+
+
+class WordUpdateSerializer(WordCreateSerializer):
+    """Validate a UI word-update request."""
 
 
 class TextSerializer(serializers.ModelSerializer[Text]):

@@ -74,17 +74,30 @@ export interface CreateWordRequest {
     ru: string;
 }
 
+export interface WordItem {
+    comment: string;
+    date_added: string;
+    en: string;
+    fr: string;
+    id: number;
+    part_of_speech: PartOfSpeechOption;
+    ru: string;
+}
+
 export interface CreateWordResponse {
     record_id: number;
-    word: {
-        comment: string;
-        en: string;
-        fr: string;
-        id: number;
-        part_of_speech: PartOfSpeechOption;
-        ru: string;
-    };
+    word: WordItem;
 }
+
+export interface WordResponse {
+    word: WordItem;
+}
+
+export interface WordListResponse {
+    words: WordItem[];
+}
+
+export type UpdateWordRequest = CreateWordRequest;
 
 export interface TextItem {
     content: string;
