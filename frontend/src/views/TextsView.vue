@@ -31,6 +31,14 @@
 
           <div class="action-row">
             <v-btn
+              type="button"
+              variant="outlined"
+              :disabled="saving || content.trim().length === 0"
+              @click="onProcessSubtitles"
+            >
+              Process subtitles
+            </v-btn>
+            <v-btn
               color="primary"
               :disabled="saving"
               :loading="saving"
@@ -110,6 +118,7 @@ import PagePanel from "../components/PagePanel.vue";
 import { getUrl } from "../helpers";
 import { router } from "../router";
 import { $toast } from "../toast";
+import { processSubtitleText } from "../utils/subtitles";
 
 type TextFormErrors = {
     content: string[];
@@ -189,6 +198,19 @@ function previewText(value: string): string {
         return normalized;
     }
     return `${normalized.slice(0, 177)}...`;
+}
+
+function onProcessSubtitles(): void {
+    const processedContent = processSubtitleText(content.value);
+
+    if (processedContent.length === 0) {
+        $toast.error("No subtitle text found to process.");
+        return;
+    }
+
+    content.value = processedContent;
+    fieldErrors.value.content = [];
+    $toast.success("Subtitles processed.");
 }
 
 async function loadTexts(): Promise<void> {
