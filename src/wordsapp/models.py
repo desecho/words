@@ -11,6 +11,7 @@ from django.db.models import (
     ManyToManyField,
     Model,
     PositiveIntegerField,
+    TextField,
     TextChoices,
     UniqueConstraint,
 )
@@ -103,6 +104,20 @@ class StudyLanguage(TextChoices):
 
     ENGLISH = "en", "English"
     FRENCH = "fr", "French"
+
+
+class Text(Model):
+    """Text."""
+
+    user_added = ForeignKey(User, CASCADE, related_name="texts")
+    name = CharField(max_length=255)
+    language = CharField(max_length=2, choices=StudyLanguage.choices)
+    content = TextField()
+    date_added = DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        """Return string representation."""
+        return self.name
 
 
 class StudyGrade(TextChoices):

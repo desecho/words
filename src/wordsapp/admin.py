@@ -2,7 +2,7 @@
 
 from django.contrib.admin import ModelAdmin, register
 
-from wordsapp.models import PartOfSpeech, Record, StudyProgress, Tag, Word
+from wordsapp.models import PartOfSpeech, Record, StudyProgress, Tag, Text, Word
 
 
 @register(PartOfSpeech)
@@ -62,6 +62,22 @@ class RecordAdmin(ModelAdmin):
         "user__username",
         "user__first_name",
         "user__last_name",
+    )
+
+
+@register(Text)
+class TextAdmin(ModelAdmin):
+    """Admin configuration for texts."""
+
+    list_display = ("name", "language", "user_added", "date_added")
+    list_filter = ("language", "date_added")
+    list_select_related = ("user_added",)
+    search_fields = (
+        "name",
+        "content",
+        "user_added__username",
+        "user_added__first_name",
+        "user_added__last_name",
     )
 
 
