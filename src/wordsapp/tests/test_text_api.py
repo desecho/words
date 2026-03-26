@@ -382,3 +382,63 @@ def test_text_detail_returns_404_for_other_users_text(
     response = api_client.get(f"/texts/{text.pk}/")
 
     assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_text_delete_removes_current_users_text_and_excludes_it_from_list(
+    api_client: APIClient,
+    user: User,
+) -> None:
+    """Deleting a text should remove it and keep it out of future list responses."""
+    kept_text = Text.objects.create(
+        user_added=user,
+        name="Keep",
+        language="en",
+        content="Still here",
+    )
+    deleted_text = Text.objects.create(
+        user_added=user,
+        name="Delete",
+        language="fr",
+        content="Remove this",
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.delete(f"/texts/{deleted_text.pk}/")
+
+    assert response.status_code == 204
+    assert not Text.objects.filter(pk=deleted_text.pk).exists()
+
+    list_response = api_client.get("/texts/")
+
+    assert list_response.status_code == 200
+    assert list_response.json()["texts"] == [
+        {
+            "id": kept_text.pk,
+            "name": "Keep",
+            "language": "en",
+            "content": "Still here",
+            "date_added": list_response.json()["texts"][0]["date_added"],
+        }
+    ]
+
+
+@pytest.mark.django_db
+def test_text_delete_returns_404_for_other_users_text(
+    api_client: APIClient,
+    user: User,
+    other_user: User,
+) -> None:
+    """Users should not be able to delete another user's text."""
+    text = Text.objects.create(
+        user_added=other_user,
+        name="Private",
+        language="en",
+        content="Hidden",
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.delete(f"/texts/{text.pk}/")
+
+    assert response.status_code == 404
+    assert Text.objects.filter(pk=text.pk).exists()

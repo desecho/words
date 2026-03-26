@@ -36,14 +36,24 @@ class TextListCreateView(APIView):
 
 
 class TextDetailView(APIView):
-    """Return a processed text detail payload."""
+    """Return or delete one of the current user's texts."""
+
+    def get_text(self, request: Request, text_id: int) -> Text:
+        """Return one text belonging to the current user."""
+        return get_object_or_404(Text.objects.filter(user_added=request.user), pk=text_id)
 
     def get(self, request: Request, text_id: int) -> Response:
         """Return one text and its highlighted segments."""
-        text = get_object_or_404(Text.objects.filter(user_added=request.user), pk=text_id)
+        text = self.get_text(request, text_id)
         return Response(
             {
                 "text": TextSerializer(text).data,
                 "segments": build_text_segments(text.content, text.language, request.user),
             }
         )
+
+    def delete(self, request: Request, text_id: int) -> Response:
+        """Delete one text belonging to the current user."""
+        text = self.get_text(request, text_id)
+        text.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

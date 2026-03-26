@@ -84,13 +84,25 @@
                   {{ languageLabelByCode[text.language] }} · {{ formatDate(text.date_added) }}
                 </div>
               </div>
-              <v-btn
-                color="primary"
-                :to="`/texts/${text.id}`"
-                variant="outlined"
-              >
-                Open
-              </v-btn>
+              <div class="text-card__actions">
+                <v-btn
+                  color="primary"
+                  :disabled="deletingTextId !== null"
+                  :to="`/texts/${text.id}`"
+                  variant="outlined"
+                >
+                  Open
+                </v-btn>
+                <v-btn
+                  color="error"
+                  :disabled="deletingTextId !== null"
+                  :loading="deletingTextId === text.id"
+                  variant="text"
+                  @click="openDeleteDialog(text)"
+                >
+                  Delete
+                </v-btn>
+              </div>
             </div>
             <p class="text-card__preview">
               {{ previewText(text.content) }}
@@ -99,6 +111,39 @@
         </div>
       </section>
     </div>
+
+    <v-dialog
+      max-width="480"
+      :model-value="textPendingDeletion !== null"
+      :persistent="deletingTextId !== null"
+      @update:model-value="onDeleteDialogModelValueChange"
+    >
+      <v-card>
+        <v-card-title>Delete text?</v-card-title>
+        <v-card-text v-if="textPendingDeletion">
+          Delete "{{ textPendingDeletion.name }}" permanently? This cannot be undone.
+        </v-card-text>
+        <v-card-actions class="delete-dialog__actions">
+          <v-spacer />
+          <v-btn
+            variant="text"
+            :disabled="deletingTextId !== null"
+            @click="closeDeleteDialog"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="error"
+            :disabled="textPendingDeletion === null"
+            :loading="deletingTextId !== null"
+            variant="flat"
+            @click="onConfirmDelete"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </PagePanel>
 </template>
 
@@ -136,6 +181,7 @@ const languageLabelByCode: Record<StudyLanguage, string> = {
 };
 
 const content = ref("");
+const deletingTextId = ref<number | null>(null);
 const fieldErrors = ref<TextFormErrors>({
     content: [],
     language: [],
@@ -145,6 +191,7 @@ const language = ref<StudyLanguage | null>(null);
 const loadingTexts = ref(false);
 const name = ref("");
 const saving = ref(false);
+const textPendingDeletion = ref<TextItem | null>(null);
 const texts = ref<TextItem[]>([]);
 
 function resetFieldErrors(): void {
@@ -213,6 +260,26 @@ function onProcessSubtitles(): void {
     $toast.success("Subtitles processed.");
 }
 
+function openDeleteDialog(text: TextItem): void {
+    if (deletingTextId.value !== null) {
+        return;
+    }
+    textPendingDeletion.value = text;
+}
+
+function closeDeleteDialog(): void {
+    if (deletingTextId.value !== null) {
+        return;
+    }
+    textPendingDeletion.value = null;
+}
+
+function onDeleteDialogModelValueChange(value: boolean): void {
+    if (!value) {
+        closeDeleteDialog();
+    }
+}
+
 async function loadTexts(): Promise<void> {
     loadingTexts.value = true;
 
@@ -225,6 +292,27 @@ async function loadTexts(): Promise<void> {
         $toast.error("Unable to load texts.");
     } finally {
         loadingTexts.value = false;
+    }
+}
+
+async function onConfirmDelete(): Promise<void> {
+    if (textPendingDeletion.value === null) {
+        return;
+    }
+
+    const textToDelete = textPendingDeletion.value;
+    deletingTextId.value = textToDelete.id;
+
+    try {
+        await axios.delete(getUrl(`texts/${textToDelete.id}/`));
+        texts.value = texts.value.filter((text) => text.id !== textToDelete.id);
+        textPendingDeletion.value = null;
+        $toast.success("Text deleted.");
+    } catch (error: unknown) {
+        console.error(error);
+        $toast.error("Unable to delete the text.");
+    } finally {
+        deletingTextId.value = null;
     }
 }
 
@@ -306,6 +394,13 @@ onMounted(async () => {
   gap: 1rem;
 }
 
+.text-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
 .text-card__title {
   margin: 0;
   font-size: 1.1rem;
@@ -329,11 +424,19 @@ onMounted(async () => {
   color: rgba(30, 27, 24, 0.7);
 }
 
+.delete-dialog__actions {
+  padding: 0 1rem 1rem;
+}
+
 @media (max-width: 720px) {
   .text-card__header,
   .texts-section__header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .text-card__actions {
+    justify-content: flex-start;
   }
 }
 </style>
