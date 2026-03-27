@@ -383,8 +383,8 @@ onMounted(async () => {
   display: grid;
   gap: 1rem;
   padding: 1.15rem;
-  border: 1px solid rgba(91, 63, 45, 0.08);
-  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
 }
 
 .text-card__header {
@@ -408,20 +408,21 @@ onMounted(async () => {
 
 .text-card__meta {
   margin-top: 0.25rem;
-  color: rgba(30, 27, 24, 0.68);
+  color: var(--app-text-soft);
   font-size: 0.92rem;
 }
 
 .text-card__preview {
   margin: 0;
-  color: rgba(30, 27, 24, 0.78);
+  color: var(--app-text-muted);
   line-height: 1.6;
 }
 
 .texts-empty {
   padding: 1rem 1.1rem;
-  border: 1px dashed rgba(91, 63, 45, 0.18);
-  color: rgba(30, 27, 24, 0.7);
+  border: 1px dashed var(--empty-border);
+  background: var(--empty-bg);
+  color: var(--app-text-soft);
 }
 
 .delete-dialog__actions {

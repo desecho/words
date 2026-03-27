@@ -273,10 +273,9 @@ function isGradeDisabled(
   display: grid;
   gap: 0.9rem;
   padding: 1.15rem 1.25rem;
-  border: 1px solid rgba(91, 63, 45, 0.14);
+  border: 1px solid var(--card-border);
   border-radius: 1.5rem;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(245, 236, 222, 0.9));
+  background: var(--card-gradient);
   cursor: pointer;
   font: inherit;
   text-align: left;
@@ -288,13 +287,13 @@ function isGradeDisabled(
 
 .study-language:hover {
   transform: translateY(-2px);
-  border-color: rgba(139, 77, 54, 0.28);
-  box-shadow: 0 18px 36px rgba(74, 49, 33, 0.08);
+  border-color: rgba(var(--v-theme-primary), 0.28);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .study-language--active {
-  border-color: rgba(38, 95, 85, 0.45);
-  box-shadow: 0 20px 40px rgba(38, 95, 85, 0.12);
+  border-color: rgba(var(--v-theme-secondary), 0.45);
+  box-shadow: var(--shadow-card-active);
 }
 
 .study-language__header {
@@ -309,7 +308,7 @@ function isGradeDisabled(
 }
 
 .study-language__cue {
-  color: rgba(30, 27, 24, 0.68);
+  color: var(--app-text-soft);
   font-size: 0.95rem;
 }
 
@@ -317,7 +316,7 @@ function isGradeDisabled(
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  color: #8b4d36;
+  color: rgb(var(--v-theme-primary));
   font-size: 0.92rem;
   font-weight: 600;
 }
@@ -336,7 +335,7 @@ function isGradeDisabled(
 }
 
 .study-card-shell__label {
-  color: #8b4d36;
+  color: rgb(var(--v-theme-primary));
   font-size: 0.84rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -347,7 +346,7 @@ function isGradeDisabled(
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  color: rgba(30, 27, 24, 0.72);
+  color: var(--app-text-soft);
   font-size: 0.95rem;
 }
 
@@ -355,11 +354,9 @@ function isGradeDisabled(
   display: grid;
   gap: 1rem;
   padding: clamp(1.5rem, 5vw, 2.5rem);
-  border: 1px solid rgba(91, 63, 45, 0.1);
+  border: 1px solid var(--card-border);
   border-radius: 2rem;
-  background:
-    radial-gradient(circle at top right, rgba(139, 77, 54, 0.12), transparent 16rem),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 239, 230, 0.92));
+  background: var(--study-card-bg);
 }
 
 .study-card__prompt {
@@ -369,7 +366,7 @@ function isGradeDisabled(
 }
 
 .study-card__instruction {
-  color: rgba(30, 27, 24, 0.68);
+  color: var(--app-text-soft);
   font-size: 1rem;
 }
 
@@ -377,15 +374,15 @@ function isGradeDisabled(
   min-height: 4.5rem;
   padding: 1rem 1.15rem;
   border-radius: 1.25rem;
-  background: rgba(38, 95, 85, 0.11);
-  color: #173d36;
+  background: rgba(var(--v-theme-secondary), 0.14);
+  color: rgb(var(--v-theme-secondary));
   font-size: clamp(1.35rem, 4vw, 1.8rem);
   font-weight: 600;
 }
 
 .study-card__answer--hidden {
-  background: rgba(91, 63, 45, 0.06);
-  color: rgba(30, 27, 24, 0.45);
+  background: var(--hidden-bg);
+  color: var(--app-text-faint);
 }
 
 .study-actions {
@@ -397,13 +394,13 @@ function isGradeDisabled(
 .study-status,
 .study-empty {
   padding: 1.5rem;
-  border: 1px dashed rgba(91, 63, 45, 0.2);
+  border: 1px dashed var(--empty-border);
   border-radius: 1.5rem;
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--empty-bg);
 }
 
 .study-status {
-  color: rgba(30, 27, 24, 0.72);
+  color: var(--app-text-soft);
 }
 
 .study-empty__title {
@@ -413,7 +410,7 @@ function isGradeDisabled(
 
 .study-empty p {
   margin: 0.75rem 0 0;
-  color: rgba(30, 27, 24, 0.7);
+  color: var(--app-text-muted);
   line-height: 1.6;
 }
 

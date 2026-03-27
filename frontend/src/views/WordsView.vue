@@ -579,8 +579,8 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 1rem;
   padding: 1.15rem;
-  border: 1px solid rgba(91, 63, 45, 0.08);
-  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
 }
 
 .word-card__header {
@@ -604,7 +604,7 @@ onBeforeUnmount(() => {
 
 .word-card__meta {
   margin-top: 0.25rem;
-  color: rgba(30, 27, 24, 0.68);
+  color: var(--app-text-soft);
   font-size: 0.92rem;
 }
 
@@ -618,11 +618,11 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 0.3rem;
   padding: 0.8rem 0.9rem;
-  background: rgba(124, 92, 60, 0.08);
+  background: var(--subtle-bg);
 }
 
 .translation-chip__label {
-  color: rgba(30, 27, 24, 0.56);
+  color: var(--app-text-faint);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -635,21 +635,22 @@ onBeforeUnmount(() => {
 
 .word-card__comment {
   margin: 0;
-  color: rgba(30, 27, 24, 0.78);
+  color: var(--app-text-muted);
   line-height: 1.6;
 }
 
 .words-empty {
   padding: 1rem 1.1rem;
-  border: 1px dashed rgba(91, 63, 45, 0.18);
-  color: rgba(30, 27, 24, 0.7);
+  border: 1px dashed var(--empty-border);
+  background: var(--empty-bg);
+  color: var(--app-text-soft);
 }
 
 .form-error {
   padding: 0.9rem 1rem;
   border-radius: 1rem;
-  background: rgba(139, 77, 54, 0.12);
-  color: #8b4d36;
+  background: rgba(var(--v-theme-primary), 0.12);
+  color: rgb(var(--v-theme-primary));
   line-height: 1.5;
 }
 

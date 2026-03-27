@@ -139,7 +139,7 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  color: rgba(30, 27, 24, 0.68);
+  color: var(--app-text-soft);
   font-size: 0.95rem;
 }
 
@@ -153,15 +153,15 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  color: rgba(30, 27, 24, 0.74);
+  color: var(--app-text-muted);
   font-size: 0.94rem;
 }
 
 .text-content {
   padding: 1.25rem;
-  border: 1px solid rgba(91, 63, 45, 0.08);
-  background: rgba(255, 255, 255, 0.72);
-  color: #231d19;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--app-text);
   font-size: 1.05rem;
   line-height: 1.9;
   white-space: pre-wrap;
@@ -174,18 +174,19 @@ onMounted(async () => {
 }
 
 .text-token--record {
-  background: rgba(139, 77, 54, 0.18);
-  box-shadow: inset 0 0 0 1px rgba(139, 77, 54, 0.16);
+  background: rgba(var(--v-theme-primary), 0.18);
+  box-shadow: inset 0 0 0 1px rgba(var(--v-theme-primary), 0.16);
 }
 
 .text-token--automatic {
-  background: rgba(197, 146, 64, 0.18);
-  box-shadow: inset 0 0 0 1px rgba(197, 146, 64, 0.2);
+  background: rgba(var(--v-theme-warning), 0.18);
+  box-shadow: inset 0 0 0 1px rgba(var(--v-theme-warning), 0.2);
 }
 
 .text-detail-empty {
   padding: 1rem 1.1rem;
-  border: 1px dashed rgba(91, 63, 45, 0.18);
-  color: rgba(30, 27, 24, 0.7);
+  border: 1px dashed var(--empty-border);
+  background: var(--empty-bg);
+  color: var(--app-text-soft);
 }
 </style>

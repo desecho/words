@@ -8,6 +8,14 @@
       <v-spacer />
 
       <div class="nav-actions">
+        <v-btn
+          :aria-label="themeToggleLabel"
+          :icon="themeToggleIcon"
+          :title="themeToggleLabel"
+          class="theme-toggle"
+          variant="text"
+          @click="toggleTheme"
+        />
         <v-btn to="/" variant="text">Home</v-btn>
         <v-btn v-if="isLoggedIn" to="/study" variant="text">Study</v-btn>
         <v-btn v-if="isLoggedIn" to="/texts" variant="text">Texts</v-btn>
@@ -29,10 +37,42 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, watch } from "vue";
+import { useTheme } from "vuetify";
 
+import {
+    applyDocumentTheme,
+    persistTheme,
+    WORDS_DARK_THEME,
+    WORDS_LIGHT_THEME,
+    type WordsThemeName,
+} from "./plugins/vuetify";
 import { useAuthStore } from "./stores/auth";
 
 const authStore = useAuthStore();
+const theme = useTheme();
 const isLoggedIn = computed(() => authStore.user.isLoggedIn);
+const isDarkTheme = computed(() => theme.global.current.value.dark);
+const themeToggleIcon = computed(() =>
+    isDarkTheme.value ? "mdi-weather-sunny" : "mdi-weather-night",
+);
+const themeToggleLabel = computed(() =>
+    isDarkTheme.value ? "Switch to light theme" : "Switch to dark theme",
+);
+
+function toggleTheme(): void {
+    theme.global.name.value = isDarkTheme.value
+        ? WORDS_LIGHT_THEME
+        : WORDS_DARK_THEME;
+}
+
+watch(
+    () => theme.global.name.value,
+    (themeName) => {
+        const resolvedThemeName = themeName as WordsThemeName;
+        applyDocumentTheme(resolvedThemeName);
+        persistTheme(resolvedThemeName);
+    },
+    { immediate: true },
+);
 </script>

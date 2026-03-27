@@ -1,16 +1,78 @@
 :root {
+  color-scheme: light;
   color: #1e1b18;
   font-family: "Avenir Next", "Segoe UI", sans-serif;
-  background:
+  --app-text: #1e1b18;
+  --app-text-muted: rgba(30, 27, 24, 0.78);
+  --app-text-soft: rgba(30, 27, 24, 0.68);
+  --app-text-faint: rgba(30, 27, 24, 0.56);
+  --app-bg:
     radial-gradient(circle at top left, rgba(214, 155, 104, 0.28), transparent 28rem),
     linear-gradient(180deg, #f7f2ea 0%, #efe4d4 100%);
+  --app-bar-bg: rgba(247, 242, 234, 0.72);
+  --app-bar-border: rgba(91, 63, 45, 0.08);
+  --panel-bg: rgba(255, 250, 243, 0.9);
+  --panel-border: rgba(91, 63, 45, 0.08);
+  --panel-shadow: 0 30px 80px rgba(74, 49, 33, 0.08);
+  --card-bg: rgba(255, 255, 255, 0.72);
+  --card-bg-strong: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(91, 63, 45, 0.1);
+  --card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(245, 236, 222, 0.9));
+  --study-card-bg:
+    radial-gradient(circle at top right, rgba(139, 77, 54, 0.12), transparent 16rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 239, 230, 0.92));
+  --subtle-bg: rgba(124, 92, 60, 0.08);
+  --hidden-bg: rgba(91, 63, 45, 0.06);
+  --empty-bg: rgba(255, 255, 255, 0.58);
+  --empty-border: rgba(91, 63, 45, 0.18);
+  --shadow-card-hover: 0 18px 36px rgba(74, 49, 33, 0.08);
+  --shadow-card-active: 0 20px 40px rgba(38, 95, 85, 0.12);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  color: #f4ede5;
+  --app-text: #f4ede5;
+  --app-text-muted: rgba(244, 237, 229, 0.78);
+  --app-text-soft: rgba(244, 237, 229, 0.68);
+  --app-text-faint: rgba(244, 237, 229, 0.52);
+  --app-bg:
+    radial-gradient(circle at top left, rgba(227, 159, 114, 0.2), transparent 30rem),
+    radial-gradient(circle at right bottom, rgba(124, 183, 170, 0.14), transparent 24rem),
+    linear-gradient(180deg, #1a1410 0%, #0f0b09 100%);
+  --app-bar-bg: rgba(18, 14, 12, 0.78);
+  --app-bar-border: rgba(227, 159, 114, 0.12);
+  --panel-bg: rgba(28, 22, 18, 0.84);
+  --panel-border: rgba(227, 159, 114, 0.12);
+  --panel-shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
+  --card-bg: rgba(38, 30, 26, 0.78);
+  --card-bg-strong: rgba(48, 38, 33, 0.92);
+  --card-border: rgba(227, 159, 114, 0.14);
+  --card-gradient: linear-gradient(135deg, rgba(52, 41, 35, 0.96), rgba(33, 25, 21, 0.92));
+  --study-card-bg:
+    radial-gradient(circle at top right, rgba(227, 159, 114, 0.18), transparent 17rem),
+    linear-gradient(180deg, rgba(45, 35, 30, 0.96), rgba(24, 19, 16, 0.94));
+  --subtle-bg: rgba(244, 237, 229, 0.08);
+  --hidden-bg: rgba(244, 237, 229, 0.06);
+  --empty-bg: rgba(31, 24, 20, 0.72);
+  --empty-border: rgba(227, 159, 114, 0.18);
+  --shadow-card-hover: 0 18px 36px rgba(0, 0, 0, 0.28);
+  --shadow-card-active: 0 22px 42px rgba(13, 27, 24, 0.36);
+}
+
+html {
+  background: var(--app-bg);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: transparent;
+  background: var(--app-bg);
+  color: var(--app-text);
+  transition:
+    background 180ms ease,
+    color 180ms ease;
 }
 
 a {
@@ -22,16 +84,26 @@ a {
   min-height: 100vh;
 }
 
+.v-application {
+  background: transparent !important;
+  color: var(--app-text) !important;
+}
+
 .app-bar {
   backdrop-filter: blur(10px);
-  background: rgba(247, 242, 234, 0.72) !important;
-  border-bottom: 1px solid rgba(91, 63, 45, 0.08);
+  background: var(--app-bar-bg) !important;
+  border-bottom: 1px solid var(--app-bar-border);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
   line-height: 0;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
 }
 
 .brand__logo {
@@ -47,6 +119,11 @@ a {
   flex-wrap: wrap;
 }
 
+.theme-toggle {
+  border: 1px solid var(--panel-border);
+  background: var(--card-bg);
+}
+
 .main-shell {
   display: flex;
   align-items: center;
@@ -59,14 +136,15 @@ a {
   width: min(100%, 46rem);
   margin: 0 auto;
   padding: clamp(1.5rem, 4vw, 3rem);
-  border: 1px solid rgba(91, 63, 45, 0.08);
-  background: rgba(255, 250, 243, 0.9);
-  box-shadow: 0 30px 80px rgba(74, 49, 33, 0.08);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(18px);
 }
 
 .page-panel__eyebrow {
   margin-bottom: 0.75rem;
-  color: #8b4d36;
+  color: rgb(var(--v-theme-primary));
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -83,7 +161,7 @@ a {
 .page-panel__description {
   max-width: 42rem;
   margin: 1rem 0 0;
-  color: rgba(30, 27, 24, 0.78);
+  color: var(--app-text-muted);
   font-size: 1.05rem;
   line-height: 1.6;
 }
@@ -117,8 +195,8 @@ a {
 
 .hero-card {
   padding: 1.25rem;
-  border: 1px solid rgba(91, 63, 45, 0.08);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--panel-border);
+  background: var(--card-bg);
 }
 
 .hero-card h2 {
@@ -139,6 +217,34 @@ a {
   margin-top: 1.5rem;
 }
 
+.v-toast__item {
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg) !important;
+  box-shadow: var(--panel-shadow);
+  color: var(--app-text) !important;
+  backdrop-filter: blur(16px);
+}
+
+.v-toast__text {
+  color: inherit !important;
+}
+
+.v-toast__item--success {
+  border-color: rgba(var(--v-theme-secondary), 0.32);
+}
+
+.v-toast__item--error {
+  border-color: rgba(var(--v-theme-error), 0.34);
+}
+
+.v-toast__item--warning {
+  border-color: rgba(var(--v-theme-warning), 0.34);
+}
+
+.v-toast__item--info {
+  border-color: rgba(var(--v-theme-primary), 0.28);
+}
+
 @media (max-width: 720px) {
   .main-shell {
     padding-top: 2rem;
@@ -150,5 +256,9 @@ a {
 
   .nav-actions {
     justify-content: flex-end;
+  }
+
+  .brand__logo {
+    height: 2.5rem;
   }
 }

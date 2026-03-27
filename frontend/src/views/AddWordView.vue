@@ -214,8 +214,8 @@ onMounted(async () => {
 .form-error {
   padding: 0.9rem 1rem;
   border-radius: 1rem;
-  background: rgba(139, 77, 54, 0.12);
-  color: #8b4d36;
+  background: rgba(var(--v-theme-primary), 0.12);
+  color: rgb(var(--v-theme-primary));
   line-height: 1.5;
 }
 </style>
