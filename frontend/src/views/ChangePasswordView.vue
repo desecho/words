@@ -2,7 +2,6 @@
   <PagePanel
     eyebrow="Account"
     title="Change password"
-    description="This page uses the authenticated password-change endpoint from Django REST Registration."
   >
     <v-form class="form-stack" @submit.prevent="onSubmit">
       <v-text-field
