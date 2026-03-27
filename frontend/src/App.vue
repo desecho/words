@@ -1,9 +1,8 @@
 <template>
   <v-app>
     <v-app-bar class="app-bar" elevation="0">
-      <RouterLink class="brand" to="/">
-        <span class="brand__mark">W</span>
-        <span class="brand__text">words</span>
+      <RouterLink aria-label="Words" class="brand" to="/">
+        <img alt="Words" class="brand__logo" src="/logo.png" />
       </RouterLink>
 
       <v-spacer />
