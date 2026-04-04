@@ -2,7 +2,6 @@
   <PagePanel
     eyebrow="Authentication"
     title="Sign in"
-    description="Use the JWT auth flow preserved from the original harness."
   >
     <v-form class="form-stack" @submit.prevent="onSubmit">
       <v-text-field

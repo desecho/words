@@ -2,7 +2,6 @@
   <PagePanel
     eyebrow="Authentication"
     title="Create an account"
-    description="Registration remains wired to Django REST Registration so the starter already has verification and password reset endpoints."
   >
     <v-form class="form-stack" @submit.prevent="onSubmit">
       <v-text-field
