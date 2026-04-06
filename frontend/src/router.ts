@@ -10,6 +10,7 @@ import {
     getQueryParamAsString,
     isValidToken,
 } from "./types/common";
+import AddWordView from "./views/AddWordView.vue";
 import ChangePasswordView from "./views/ChangePasswordView.vue";
 import LandingView from "./views/LandingView.vue";
 import LoginView from "./views/LoginView.vue";
@@ -18,11 +19,11 @@ import RegisterSuccessView from "./views/RegisterSuccessView.vue";
 import RegistrationView from "./views/RegistrationView.vue";
 import ResetPasswordRequestView from "./views/ResetPasswordRequestView.vue";
 import ResetPasswordView from "./views/ResetPasswordView.vue";
+import StatsView from "./views/StatsView.vue";
 import StudyView from "./views/StudyView.vue";
 import TextDetailView from "./views/TextDetailView.vue";
 import TextsView from "./views/TextsView.vue";
 import VerifyUserView from "./views/VerifyUserView.vue";
-import AddWordView from "./views/AddWordView.vue";
 import WordsView from "./views/WordsView.vue";
 
 function authProps(route: RouteLocationNormalized): AuthProps {
@@ -55,6 +56,7 @@ export const router = createRouter({
             component: ResetPasswordRequestView,
             path: "/reset-password-request",
         },
+        { component: StatsView, path: "/stats" },
         { component: StudyView, path: "/study" },
         { component: WordsView, path: "/words" },
         { component: AddWordView, path: "/words/new" },
@@ -73,7 +75,13 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-    const privatePages = ["/study", "/words", "/change-password", "/texts"];
+    const privatePages = [
+        "/study",
+        "/stats",
+        "/words",
+        "/change-password",
+        "/texts",
+    ];
     const authRequired = privatePages.some(
         (path) => to.path === path || to.path.startsWith(`${path}/`),
     );

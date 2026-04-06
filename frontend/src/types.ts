@@ -22,6 +22,55 @@ export interface StudySummary {
     summary: Record<StudyLanguage, StudyLanguageSummary>;
 }
 
+export interface StatsOverview {
+    records_total: number;
+    review_success_rate: number;
+    reviews_successful: number;
+    reviews_total: number;
+    texts_total: number;
+    words_total: number;
+}
+
+export interface StatsLanguageSummary {
+    active: number;
+    due: number;
+    ignored: number;
+    label: string;
+    reviewed_total: number;
+    success_rate: number;
+    successful_reviews: number;
+    unseen: number;
+}
+
+export interface StatsActivity {
+    recent_reviews_7d: number;
+    recent_texts_added_7d: number;
+    recent_words_added_7d: number;
+}
+
+export interface StatsPartOfSpeechCount {
+    count: number;
+    label: string;
+}
+
+export interface StatsLanguageCoverage {
+    with_both: number;
+    with_english: number;
+    with_french: number;
+}
+
+export interface StatsCollection {
+    language_coverage: StatsLanguageCoverage;
+    parts_of_speech: StatsPartOfSpeechCount[];
+}
+
+export interface StatsResponse {
+    activity: StatsActivity;
+    collection: StatsCollection;
+    overview: StatsOverview;
+    study: Record<StudyLanguage, StatsLanguageSummary>;
+}
+
 export interface StudyCard {
     answer: string;
     can_ignore: boolean;
