@@ -11,6 +11,7 @@ import {
     isValidToken,
 } from "./types/common";
 import AddWordView from "./views/AddWordView.vue";
+import AboutView from "./views/AboutView.vue";
 import ChangePasswordView from "./views/ChangePasswordView.vue";
 import LandingView from "./views/LandingView.vue";
 import LoginView from "./views/LoginView.vue";
@@ -38,6 +39,7 @@ export const router = createRouter({
     history: createWebHistory(),
     routes: [
         { component: LandingView, path: "/" },
+        { component: AboutView, path: "/about" },
         { component: LoginView, path: "/login" },
         { component: LogoutView, path: "/logout" },
         { component: RegistrationView, path: "/register" },
