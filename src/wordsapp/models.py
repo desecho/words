@@ -5,11 +5,13 @@ from django.db.models import (
     CASCADE,
     BooleanField,
     CharField,
+    CheckConstraint,
     DateTimeField,
     FloatField,
     ForeignKey,
     ManyToManyField,
     Model,
+    Q,
     PositiveIntegerField,
     TextField,
     TextChoices,
@@ -74,13 +76,23 @@ class Word(Model):
 
     user_added = ForeignKey(User, CASCADE, related_name="words")
     en = CharField(max_length=255)
-    ru = CharField(max_length=255, blank=True)
+    ru = CharField(max_length=255)
     fr = CharField(max_length=255, blank=True)
     part_of_speech = ForeignKey(PartOfSpeech, CASCADE, related_name="words")
     tags = ManyToManyField(Tag, related_name="words", blank=True)
     date_added = DateTimeField(auto_now_add=True)
     frequency = PositiveIntegerField(unique=True, null=True, blank=True)
     comment = CharField(max_length=255, blank=True)
+
+    class Meta:
+        """Meta options for Word."""
+
+        constraints = [
+            CheckConstraint(
+                condition=~Q(en="") | ~Q(fr=""),
+                name="wordsapp_word_en_or_fr_required",
+            )
+        ]
 
     def __str__(self) -> str:
         """Return string representation."""

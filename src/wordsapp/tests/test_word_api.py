@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import pytest
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from rest_framework.test import APIClient
 
 from wordsapp.models import PartOfSpeech, Record, StudyProgress, User, Word
@@ -236,6 +238,43 @@ def test_word_create_allows_duplicate_submissions(
     assert Record.objects.count() == 2
     assert first_response.json()["word"]["id"] != second_response.json()["word"]["id"]
     assert first_response.json()["record_id"] != second_response.json()["record_id"]
+
+
+@pytest.mark.django_db
+def test_word_model_validation_requires_russian(
+    user: User,
+    noun: PartOfSpeech,
+) -> None:
+    """Model validation should reject blank Russian translations."""
+    word = Word(
+        user_added=user,
+        en="cat",
+        fr="chat",
+        ru="",
+        part_of_speech=noun,
+    )
+
+    with pytest.raises(ValidationError) as exc_info:
+        word.full_clean()
+
+    assert exc_info.value.message_dict == {"ru": ["This field cannot be blank."]}
+
+
+@pytest.mark.django_db
+def test_word_model_requires_english_or_french(
+    user: User,
+    noun: PartOfSpeech,
+) -> None:
+    """The database should reject words with neither English nor French."""
+    with pytest.raises(IntegrityError):
+        with transaction.atomic():
+            Word.objects.create(
+                user_added=user,
+                en="",
+                fr="",
+                ru="кот",
+                part_of_speech=noun,
+            )
 
 
 @pytest.mark.django_db
