@@ -1,0 +1,8 @@
+# Xcode user-specific files
+xcuserdata/
+*.xcuserdatad/
+*.xcuserstate
+
+# Xcode source control metadata
+*.xccheckout
+*.xcscmblueprint
