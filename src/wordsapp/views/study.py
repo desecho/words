@@ -84,6 +84,31 @@ def due_progress_queryset(
     )
 
 
+def incorrect_progress_queryset(user: User, language: str) -> QuerySet[StudyProgress]:
+    """Return eligible progress rows whose latest grade is incorrect."""
+    prompt_filter = (
+        Q(record__word__en__gt="")
+        if language == StudyLanguage.ENGLISH
+        else Q(record__word__fr__gt="")
+    )
+    return (
+        StudyProgress.objects.filter(
+            user=user,
+            language=language,
+            ignore=False,
+            last_grade=StudyGrade.INCORRECT,
+        )
+        .select_related("record__word__part_of_speech")
+        .filter(
+            prompt_filter,
+            last_reviewed_at__isnull=False,
+            record__user=user,
+            record__word__ru__gt="",
+            record__word__part_of_speech__abbreviation__gt="",
+        )
+    )
+
+
 def build_card_payload(
     record: Record,
     language: str,
@@ -105,6 +130,31 @@ def build_card_payload(
         "part_of_speech_abbreviation": part_of_speech_abbreviation,
         "prompt": prompt,
         "record_id": record.pk,
+    }
+
+
+def build_incorrect_word_payload(
+    progress: StudyProgress,
+    language: str,
+) -> dict[str, object]:
+    """Build one incorrect-word row for the Learn page."""
+    prompt = (
+        progress.record.word.en
+        if language == StudyLanguage.ENGLISH
+        else progress.record.word.fr
+    )
+    part_of_speech = progress.record.word.part_of_speech
+    abbreviation = part_of_speech.abbreviation
+    label = (
+        f"{part_of_speech.name} ({abbreviation})" if abbreviation else part_of_speech.name
+    )
+    return {
+        "language": language,
+        "last_reviewed_at": progress.last_reviewed_at,
+        "part_of_speech_label": label,
+        "prompt": prompt,
+        "record_id": progress.record_id,
+        "ru": progress.record.word.ru,
     }
 
 
@@ -205,6 +255,26 @@ class StudyNextCardView(APIView):
         language = cast(str, serializer.validated_data["language"])
         card = get_next_card(user, language, timezone.now())
         return Response({"card": card})
+
+
+class StudyIncorrectWordsView(APIView):
+    """Return incorrectly answered words for one study language."""
+
+    def get(self, request: Request) -> Response:
+        """Return incorrect words for the current user and language."""
+        user = get_authenticated_user(request)
+        serializer = StudyLanguageQuerySerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        language = cast(str, serializer.validated_data["language"])
+        words = [
+            build_incorrect_word_payload(progress, language)
+            for progress in incorrect_progress_queryset(user, language).order_by(
+                F("last_reviewed_at").desc(nulls_last=True),
+                "record_id",
+                "pk",
+            )
+        ]
+        return Response({"words": words})
 
 
 class StudyReviewView(APIView):

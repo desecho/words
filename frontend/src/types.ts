@@ -22,6 +22,19 @@ export interface StudySummary {
     summary: Record<StudyLanguage, StudyLanguageSummary>;
 }
 
+export interface LearnWordItem {
+    language: StudyLanguage;
+    last_reviewed_at: string;
+    part_of_speech_label: string;
+    prompt: string;
+    record_id: number;
+    ru: string;
+}
+
+export interface LearnListResponse {
+    words: LearnWordItem[];
+}
+
 export interface StatsOverview {
     records_total: number;
     review_success_rate: number;

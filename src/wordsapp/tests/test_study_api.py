@@ -65,6 +65,14 @@ def create_record(
 
 
 @pytest.mark.django_db
+def test_incorrect_words_requires_authentication(api_client: APIClient) -> None:
+    """The Learn endpoint should reject anonymous requests."""
+    response = api_client.get("/study/incorrect-words/", {"language": "en"})
+
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
 def test_study_summary_counts_due_and_unseen_cards(
     api_client: APIClient,
     user: User,
@@ -139,6 +147,241 @@ def test_study_summary_counts_due_and_unseen_cards(
     }
 
     assert english_only_record.pk is not None
+
+
+@pytest.mark.django_db
+def test_incorrect_words_lists_latest_incorrect_rows_for_selected_language(
+    api_client: APIClient,
+    user: User,
+    other_user: User,
+    noun: PartOfSpeech,
+    blank_abbreviation_pos: PartOfSpeech,
+) -> None:
+    """Only current incorrect rows for the selected language should be returned."""
+    now = timezone.now()
+    newest_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="bird",
+        ru="птица",
+        fr="oiseau",
+        frequency=10,
+    )
+    tie_record_a = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="apple",
+        ru="яблоко",
+        fr="pomme",
+        frequency=20,
+    )
+    tie_record_b = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="banana",
+        ru="банан",
+        fr="banane",
+        frequency=30,
+    )
+    oldest_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="cat",
+        ru="кот",
+        fr="chat",
+        frequency=40,
+    )
+    correct_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="dog",
+        ru="собака",
+        fr="chien",
+        frequency=50,
+    )
+    ignored_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="house",
+        ru="дом",
+        fr="maison",
+        frequency=60,
+    )
+    create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="",
+        ru="пусто",
+        fr="vide",
+        frequency=70,
+    )
+    missing_russian_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="moon",
+        ru="",
+        fr="lune",
+        frequency=80,
+    )
+    missing_pos_record = create_record(
+        owner=user,
+        part_of_speech=blank_abbreviation_pos,
+        en="stone",
+        ru="камень",
+        fr="pierre",
+        frequency=90,
+    )
+    french_only_progress_record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="river",
+        ru="река",
+        fr="riviere",
+        frequency=100,
+    )
+    other_user_record = create_record(
+        owner=other_user,
+        part_of_speech=noun,
+        en="other",
+        ru="другой",
+        fr="autre",
+        frequency=110,
+    )
+
+    shared_review_time = now - timedelta(hours=6)
+    StudyProgress.objects.create(
+        user=user,
+        record=newest_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=now - timedelta(hours=1),
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=tie_record_a,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=shared_review_time,
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=tie_record_b,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=shared_review_time,
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=oldest_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=now - timedelta(days=2),
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=correct_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="correct",
+        last_reviewed_at=now - timedelta(hours=2),
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=ignored_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        ignore=True,
+        last_grade="incorrect",
+        last_reviewed_at=now - timedelta(hours=3),
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=missing_russian_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=now - timedelta(hours=4),
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=missing_pos_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=now - timedelta(hours=5),
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=french_only_progress_record,
+        language=StudyLanguage.FRENCH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=now - timedelta(minutes=30),
+    )
+    StudyProgress.objects.create(
+        user=other_user,
+        record=other_user_record,
+        language=StudyLanguage.ENGLISH,
+        due_at=now,
+        last_grade="incorrect",
+        last_reviewed_at=now - timedelta(minutes=15),
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.get("/study/incorrect-words/", {"language": "en"})
+
+    assert response.status_code == 200
+    payload = response.json()["words"]
+    assert [item["record_id"] for item in payload] == [
+        newest_record.pk,
+        tie_record_a.pk,
+        tie_record_b.pk,
+        oldest_record.pk,
+    ]
+    assert payload[0]["prompt"] == "bird"
+    assert payload[0]["ru"] == "птица"
+    assert payload[0]["part_of_speech_label"] == "noun (n)"
+    assert payload[0]["language"] == "en"
+    assert payload[0]["last_reviewed_at"] is not None
+
+
+@pytest.mark.django_db
+def test_incorrect_words_uses_selected_language_prompt(
+    api_client: APIClient,
+    user: User,
+    noun: PartOfSpeech,
+) -> None:
+    """French Learn rows should use the French prompt column."""
+    record = create_record(
+        owner=user,
+        part_of_speech=noun,
+        en="garden",
+        ru="сад",
+        fr="jardin",
+        frequency=10,
+    )
+    StudyProgress.objects.create(
+        user=user,
+        record=record,
+        language=StudyLanguage.FRENCH,
+        due_at=timezone.now(),
+        last_grade="incorrect",
+        last_reviewed_at=timezone.now(),
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.get("/study/incorrect-words/", {"language": "fr"})
+
+    assert response.status_code == 200
+    payload = response.json()["words"]
+    assert len(payload) == 1
+    assert payload[0]["prompt"] == "jardin"
+    assert payload[0]["ru"] == "сад"
+    assert payload[0]["language"] == "fr"
 
 
 @pytest.mark.django_db

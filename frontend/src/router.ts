@@ -10,10 +10,11 @@ import {
     getQueryParamAsString,
     isValidToken,
 } from "./types/common";
-import AddWordView from "./views/AddWordView.vue";
 import AboutView from "./views/AboutView.vue";
+import AddWordView from "./views/AddWordView.vue";
 import ChangePasswordView from "./views/ChangePasswordView.vue";
 import LandingView from "./views/LandingView.vue";
+import LearnView from "./views/LearnView.vue";
 import LoginView from "./views/LoginView.vue";
 import LogoutView from "./views/LogoutView.vue";
 import RegisterSuccessView from "./views/RegisterSuccessView.vue";
@@ -58,6 +59,7 @@ export const router = createRouter({
             component: ResetPasswordRequestView,
             path: "/reset-password-request",
         },
+        { component: LearnView, path: "/learn" },
         { component: StatsView, path: "/stats" },
         { component: StudyView, path: "/study" },
         { component: WordsView, path: "/words" },
@@ -78,6 +80,7 @@ export const router = createRouter({
 
 router.beforeEach(async (to) => {
     const privatePages = [
+        "/learn",
         "/study",
         "/stats",
         "/words",

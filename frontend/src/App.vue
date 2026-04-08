@@ -19,6 +19,7 @@
         <v-btn to="/" variant="text">Home</v-btn>
         <v-btn to="/about" variant="text">About</v-btn>
         <v-btn v-if="isLoggedIn" to="/study" variant="text">Study</v-btn>
+        <v-btn v-if="isLoggedIn" to="/learn" variant="text">Learn</v-btn>
         <v-btn v-if="isLoggedIn" to="/stats" variant="text">Stats</v-btn>
         <v-btn v-if="isLoggedIn" to="/texts" variant="text">Texts</v-btn>
         <v-btn v-if="isLoggedIn" to="/words" variant="text">Words</v-btn>
