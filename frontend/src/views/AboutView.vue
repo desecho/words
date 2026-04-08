@@ -25,7 +25,6 @@
           <h2>How people use it</h2>
           <ul>
             <li>Capture words while reading or watching content.</li>
-            <li>Import larger vocabulary sets from a workbook when needed.</li>
             <li>Study from English or French prompts while answering in Russian.</li>
           </ul>
         </article>
