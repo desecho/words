@@ -1,7 +1,7 @@
 [project]
 name = "words"
 version = "0.0.0"
-description = "Empty Django and Vue starter extracted from the shows harness."
+description = "Words is a Django-based web application for learning vocabulary."
 authors = [{name = "Anton Samarchyan", email = "desecho@gmail.com"}]
 license = {text = "MIT"}
 readme = "README.rst"
