@@ -55,6 +55,22 @@
             </div>
           </v-sheet>
 
+          <div class="study-shortcuts" aria-label="Keyboard shortcuts">
+            <span class="study-shortcuts__label">Shortcuts</span>
+            <span class="study-shortcuts__item">
+              <kbd class="study-shortcut-key">Space</kbd>
+              Show translation
+            </span>
+            <span
+              v-for="grade in gradeOptions"
+              :key="grade.value"
+              class="study-shortcuts__item"
+            >
+              <kbd class="study-shortcut-key">{{ grade.shortcut }}</kbd>
+              {{ grade.label }}
+            </span>
+          </div>
+
           <div class="study-actions">
             <v-btn
               color="primary"
@@ -63,7 +79,10 @@
               variant="flat"
               @click="revealed = true"
             >
-              Show translation
+              <span class="study-button-content">
+                <span>Show translation</span>
+                <kbd class="study-shortcut-key">Space</kbd>
+              </span>
             </v-btn>
             <v-btn
               v-for="grade in gradeOptions"
@@ -75,7 +94,10 @@
               :variant="grade.variant"
               @click="submitGrade(grade.value)"
             >
-              {{ grade.label }}
+              <span class="study-button-content">
+                <span>{{ grade.label }}</span>
+                <kbd class="study-shortcut-key">{{ grade.shortcut }}</kbd>
+              </span>
             </v-btn>
           </div>
         </template>
@@ -94,7 +116,7 @@
 
 <script lang="ts" setup>
 import axios from "axios";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 import type {
     StudyCard,
@@ -130,6 +152,7 @@ const gradeOptions: Array<{
     color: string;
     label: string;
     requiresIgnoreableCard: boolean;
+    shortcut: string;
     value: StudyGrade;
     variant: "flat" | "outlined";
 }> = [
@@ -137,6 +160,7 @@ const gradeOptions: Array<{
         color: "primary",
         label: "Incorrect",
         requiresIgnoreableCard: false,
+        shortcut: "1",
         value: "incorrect",
         variant: "outlined",
     },
@@ -144,6 +168,7 @@ const gradeOptions: Array<{
         color: "secondary",
         label: "Correct",
         requiresIgnoreableCard: false,
+        shortcut: "2",
         value: "correct",
         variant: "flat",
     },
@@ -151,6 +176,7 @@ const gradeOptions: Array<{
         color: "secondary",
         label: "Ignore",
         requiresIgnoreableCard: true,
+        shortcut: "3",
         value: "ignore",
         variant: "outlined",
     },
@@ -207,25 +233,38 @@ async function loadCard(language: StudyLanguage): Promise<void> {
     }
 }
 
-async function submitGrade(grade: StudyGrade): Promise<void> {
-    if (card.value === null || !revealed.value) {
-        return;
+function reviewableCardForGrade(grade: StudyGrade): StudyCard | null {
+    if (card.value === null || !revealed.value || reviewLoading.value) {
+        return null;
     }
     if (grade === "ignore" && !card.value.can_ignore) {
+        return null;
+    }
+
+    return card.value;
+}
+
+async function submitGrade(grade: StudyGrade): Promise<void> {
+    const reviewCard = reviewableCardForGrade(grade);
+    if (reviewCard === null) {
         return;
     }
 
+    const recordIdKey = "record_id";
+    const reviewLanguage = selectedLanguage.value;
     pendingGrade.value = grade;
 
     try {
         const response = await axios.post(getUrl("study/review/"), {
             grade,
-            language: selectedLanguage.value,
-            record_id: card.value.record_id,
+            language: reviewLanguage,
+            [recordIdKey]: reviewCard.record_id,
         });
         const data = response.data as StudyReviewResponse;
-        card.value = data.next_card;
-        revealed.value = false;
+        if (selectedLanguage.value === reviewLanguage) {
+            card.value = data.next_card;
+            revealed.value = false;
+        }
         await loadSummary(false);
     } catch (error: unknown) {
         console.error(error);
@@ -242,10 +281,6 @@ watch(selectedLanguage, async (language, previousLanguage) => {
     await loadCard(language);
 });
 
-onMounted(async () => {
-    await Promise.all([loadSummary(), loadCard(selectedLanguage.value)]);
-});
-
 function isGradeDisabled(
     grade: (typeof gradeOptions)[number],
 ): boolean {
@@ -255,6 +290,74 @@ function isGradeDisabled(
         (grade.requiresIgnoreableCard && card.value?.can_ignore === false)
     );
 }
+
+function isEditableTarget(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) {
+        return false;
+    }
+
+    return (
+        target.isContentEditable ||
+        ["INPUT", "SELECT", "TEXTAREA"].includes(target.tagName)
+    );
+}
+
+function isButtonActivationTarget(target: EventTarget | null): boolean {
+    return (
+        target instanceof HTMLElement &&
+        target.closest("a, button, [role='button']") !== null
+    );
+}
+
+function handleStudyShortcut(event: KeyboardEvent): void {
+    if (
+        isEditableTarget(event.target) ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey
+    ) {
+        return;
+    }
+
+    if (event.code === "Space" || event.key === " " || event.key === "Spacebar") {
+        if (isButtonActivationTarget(event.target)) {
+            return;
+        }
+
+        if (card.value === null || loadingCard.value) {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (!revealed.value && !reviewLoading.value) {
+            revealed.value = true;
+        }
+
+        return;
+    }
+
+    const grade = gradeOptions.find((option) => option.shortcut === event.key);
+    if (grade === undefined || card.value === null) {
+        return;
+    }
+
+    event.preventDefault();
+
+    if (!isGradeDisabled(grade)) {
+        void submitGrade(grade.value);
+    }
+}
+
+onMounted(async () => {
+    window.addEventListener("keydown", handleStudyShortcut);
+    await Promise.all([loadSummary(), loadCard(selectedLanguage.value)]);
+});
+
+onUnmounted(() => {
+    window.removeEventListener("keydown", handleStudyShortcut);
+});
 </script>
 
 <style scoped>
@@ -389,6 +492,49 @@ function isGradeDisabled(
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.study-button-content,
+.study-shortcuts,
+.study-shortcuts__item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.study-button-content {
+  gap: 0.45rem;
+}
+
+.study-shortcuts {
+  flex-wrap: wrap;
+  gap: 0.55rem 0.9rem;
+  color: var(--app-text-soft);
+  font-size: 0.92rem;
+}
+
+.study-shortcuts__label {
+  color: var(--app-text-muted);
+  font-weight: 700;
+}
+
+.study-shortcuts__item {
+  gap: 0.4rem;
+}
+
+.study-shortcut-key {
+  display: inline-flex;
+  min-width: 1.55rem;
+  min-height: 1.45rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 0.35rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.78;
 }
 
 .study-status,
