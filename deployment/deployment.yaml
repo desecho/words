@@ -17,7 +17,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: words
-          image: ghcr.io/your-org/words-backend:latest
+          image: ghcr.io/desecho/words-backend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -30,16 +30,22 @@ spec:
             httpGet:
               path: /health/
               port: 8000
+              httpHeaders:
+                - name: Host
+                  value: api.words.samarchyan.me
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health/
               port: 8000
+              httpHeaders:
+                - name: Host
+                  value: api.words.samarchyan.me
             initialDelaySeconds: 5
             periodSeconds: 5
         - name: frontend
-          image: ghcr.io/your-org/words-frontend:latest
+          image: ghcr.io/desecho/words-frontend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
