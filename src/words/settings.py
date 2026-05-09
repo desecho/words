@@ -17,9 +17,28 @@ def get_bool(name: str, default: bool = False) -> bool:
     return value.lower() in {"1", "true", "yes", "on"}
 
 
+def get_unique_urls(*urls: str) -> list[str]:
+    """Return non-empty URLs without duplicates, preserving order."""
+    result = []
+    for url in urls:
+        if url and url not in result:
+            result.append(url)
+    return result
+
+
+def default_project_origin(host: str) -> str:
+    """Return the default public origin for this deployment host."""
+    if host in {"localhost", "127.0.0.1"}:
+        return f"http://{host}:8000"
+    return f"https://{host}"
+
+
 DEBUG = get_bool("DEBUG", True)
 SECRET_KEY = getenv("SECRET_KEY", "words-dev-secret-key")
 PROJECT_DOMAIN = getenv("PROJECT_DOMAIN", "localhost")
+PROJECT_ORIGIN = getenv(
+    "PROJECT_ORIGIN", default_project_origin(PROJECT_DOMAIN)
+).rstrip("/")
 FRONTEND_URL = getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 FRONTEND_URL2 = getenv("FRONTEND_URL2", "").rstrip("/")
 INTERNAL_IP = getenv("INTERNAL_IP", "127.0.0.1")
@@ -136,8 +155,9 @@ EMAIL_BACKEND = getenv(
 )
 DEFAULT_FROM_EMAIL = getenv("ADMIN_EMAIL", "admin@example.com")
 
-CORS_ALLOWED_ORIGINS = [url for url in [FRONTEND_URL, FRONTEND_URL2] if url]
-CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)
+CORS_ALLOWED_ORIGINS = get_unique_urls(FRONTEND_URL, FRONTEND_URL2)
+CSRF_TRUSTED_ORIGINS = get_unique_urls(PROJECT_ORIGIN, FRONTEND_URL, FRONTEND_URL2)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
