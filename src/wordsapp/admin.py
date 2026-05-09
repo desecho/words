@@ -2,9 +2,12 @@
 
 from typing import TYPE_CHECKING, TypeAlias
 
+from django.contrib import admin
 from django.contrib.admin import ModelAdmin, register
 
 from wordsapp.models import PartOfSpeech, Record, StudyProgress, Tag, Text, Word
+
+admin.site.index_template = "admin/wordsapp_index.html"
 
 if TYPE_CHECKING:
     PartOfSpeechAdminBase: TypeAlias = ModelAdmin[PartOfSpeech]

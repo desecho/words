@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from wordsapp.admin_import import import_words_admin_view
 from wordsapp.views.health import HealthView
 from wordsapp.views.stats import StatsSummaryView
 from wordsapp.views.study import (
@@ -18,6 +19,11 @@ from wordsapp.views.user import UserCheckEmailAvailabilityView
 from wordsapp.views.word import PartOfSpeechListView, WordDetailView, WordListCreateView
 
 urlpatterns = [
+    path(
+        "admin/import-words/",
+        admin.site.admin_view(import_words_admin_view),
+        name="wordsapp_import_words",
+    ),
     path("admin/", admin.site.urls),
     path("health/", HealthView.as_view(), name="health"),
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
