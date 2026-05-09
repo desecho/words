@@ -125,7 +125,6 @@ async function handleAuthenticationError(error: AxiosError): Promise<unknown> {
     }
 
     requestConfig.hasRetriedAuthentication = true;
-    // eslint-disable-next-line require-atomic-updates
     isRefreshingToken = true;
 
     try {

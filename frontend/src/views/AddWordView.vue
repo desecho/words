@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts" setup>
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { computed, onMounted, ref } from "vue";
 
 import type {
@@ -80,10 +80,21 @@ type WordFormErrors = {
     comment: string[];
     en: string[];
     fr: string[];
-    non_field_errors: string[];
-    part_of_speech_id: string[];
+    "non_field_errors": string[];
+    "part_of_speech_id": string[];
     ru: string[];
 };
+
+function createEmptyWordFormErrors(): WordFormErrors {
+    return {
+        comment: [],
+        en: [],
+        fr: [],
+        "non_field_errors": [],
+        "part_of_speech_id": [],
+        ru: [],
+    };
+}
 
 const comment = ref("");
 const en = ref("");
@@ -101,17 +112,6 @@ const partOfSpeechItems = computed(() =>
         label: `${option.name} (${option.abbreviation})`,
     })),
 );
-
-function createEmptyWordFormErrors(): WordFormErrors {
-    return {
-        comment: [],
-        en: [],
-        fr: [],
-        non_field_errors: [],
-        part_of_speech_id: [],
-        ru: [],
-    };
-}
 
 function resetFieldErrors(): void {
     fieldErrors.value = createEmptyWordFormErrors();
@@ -132,10 +132,10 @@ function validateForm(): boolean {
         fieldErrors.value.ru = ["Russian is required."];
     }
     if (partOfSpeechId.value === null) {
-        fieldErrors.value.part_of_speech_id = ["Part of speech is required."];
+        fieldErrors.value["part_of_speech_id"] = ["Part of speech is required."];
     }
     if (en.value.trim().length === 0 && fr.value.trim().length === 0) {
-        fieldErrors.value.non_field_errors = [
+        fieldErrors.value["non_field_errors"] = [
             "Provide at least one of English or French.",
         ];
     }
@@ -184,7 +184,7 @@ async function onSubmit(): Promise<void> {
             comment: comment.value.trim(),
             en: en.value.trim(),
             fr: fr.value.trim(),
-            part_of_speech_id: partOfSpeechId.value,
+            "part_of_speech_id": partOfSpeechId.value,
             ru: ru.value.trim(),
         };
 
@@ -195,7 +195,7 @@ async function onSubmit(): Promise<void> {
         await router.push("/words");
     } catch (error: unknown) {
         console.error(error);
-        if (axios.isAxiosError(error) && error.response?.data) {
+        if (isAxiosError(error) && error.response?.data) {
             applyServerErrors(error.response.data as Record<string, unknown>);
         } else {
             $toast.error("Unable to add the word.");

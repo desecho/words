@@ -209,7 +209,6 @@ import {
     watch,
 } from "vue";
 
-import type { Ref } from "vue";
 import type {
     PartOfSpeechListResponse,
     PartOfSpeechOption,
@@ -218,6 +217,7 @@ import type {
     WordListResponse,
     WordResponse,
 } from "../types";
+import type { Ref } from "vue";
 
 import PagePanel from "../components/PagePanel.vue";
 import { getUrl } from "../helpers";
@@ -227,8 +227,8 @@ type WordFormErrors = {
     comment: string[];
     en: string[];
     fr: string[];
-    non_field_errors: string[];
-    part_of_speech_id: string[];
+    "non_field_errors": string[];
+    "part_of_speech_id": string[];
     ru: string[];
 };
 
@@ -236,9 +236,30 @@ type WordFormState = {
     comment: string;
     en: string;
     fr: string;
-    part_of_speech_id: number | null;
+    "part_of_speech_id": number | null;
     ru: string;
 };
+
+function createEmptyWordForm(): WordFormState {
+    return {
+        comment: "",
+        en: "",
+        fr: "",
+        "part_of_speech_id": null,
+        ru: "",
+    };
+}
+
+function createEmptyWordFormErrors(): WordFormErrors {
+    return {
+        comment: [],
+        en: [],
+        fr: [],
+        "non_field_errors": [],
+        "part_of_speech_id": [],
+        ru: [],
+    };
+}
 
 const editForm = reactive<WordFormState>(createEmptyWordForm());
 const editFieldErrors = ref<WordFormErrors>(createEmptyWordFormErrors());
@@ -269,27 +290,6 @@ const wordsEmptyMessage = computed(() =>
 let latestLoadWordsRequestId = 0;
 let searchTimer: ReturnType<typeof window.setTimeout> | null = null;
 
-function createEmptyWordForm(): WordFormState {
-    return {
-        comment: "",
-        en: "",
-        fr: "",
-        part_of_speech_id: null,
-        ru: "",
-    };
-}
-
-function createEmptyWordFormErrors(): WordFormErrors {
-    return {
-        comment: [],
-        en: [],
-        fr: [],
-        non_field_errors: [],
-        part_of_speech_id: [],
-        ru: [],
-    };
-}
-
 function resetFieldErrors(fieldErrors: Ref<WordFormErrors>): void {
     fieldErrors.value = createEmptyWordFormErrors();
 }
@@ -303,7 +303,7 @@ function populateWordForm(form: WordFormState, word: WordItem): void {
         comment: word.comment,
         en: word.en,
         fr: word.fr,
-        part_of_speech_id: word.part_of_speech.id,
+        "part_of_speech_id": word.part_of_speech.id,
         ru: word.ru,
     });
 }
@@ -317,11 +317,11 @@ function validateWordForm(
     if (form.ru.trim().length === 0) {
         fieldErrors.value.ru = ["Russian is required."];
     }
-    if (form.part_of_speech_id === null) {
-        fieldErrors.value.part_of_speech_id = ["Part of speech is required."];
+    if (form["part_of_speech_id"] === null) {
+        fieldErrors.value["part_of_speech_id"] = ["Part of speech is required."];
     }
     if (form.en.trim().length === 0 && form.fr.trim().length === 0) {
-        fieldErrors.value.non_field_errors = [
+        fieldErrors.value["non_field_errors"] = [
             "Provide at least one of English or French.",
         ];
     }
@@ -351,7 +351,7 @@ function buildWordPayload(form: WordFormState): UpdateWordRequest {
         comment: form.comment.trim(),
         en: form.en.trim(),
         fr: form.fr.trim(),
-        part_of_speech_id: form.part_of_speech_id,
+        "part_of_speech_id": form["part_of_speech_id"],
         ru: form.ru.trim(),
     };
 }
@@ -444,8 +444,8 @@ function openDeleteDialog(word: WordItem): void {
     wordPendingDeletion.value = word;
 }
 
-function closeDeleteDialog(): void {
-    if (deletingWordId.value !== null) {
+function closeDeleteDialog(force = false): void {
+    if (deletingWordId.value !== null && !force) {
         return;
     }
 
@@ -512,7 +512,7 @@ async function onConfirmDelete(): Promise<void> {
             closeEditDialog();
         }
 
-        wordPendingDeletion.value = null;
+        closeDeleteDialog(true);
         $toast.success("Word deleted.");
     } catch (error: unknown) {
         console.error(error);

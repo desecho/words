@@ -267,8 +267,8 @@ function openDeleteDialog(text: TextItem): void {
     textPendingDeletion.value = text;
 }
 
-function closeDeleteDialog(): void {
-    if (deletingTextId.value !== null) {
+function closeDeleteDialog(force = false): void {
+    if (deletingTextId.value !== null && !force) {
         return;
     }
     textPendingDeletion.value = null;
@@ -306,7 +306,7 @@ async function onConfirmDelete(): Promise<void> {
     try {
         await axios.delete(getUrl(`texts/${textToDelete.id}/`));
         texts.value = texts.value.filter((text) => text.id !== textToDelete.id);
-        textPendingDeletion.value = null;
+        closeDeleteDialog(true);
         $toast.success("Text deleted.");
     } catch (error: unknown) {
         console.error(error);
