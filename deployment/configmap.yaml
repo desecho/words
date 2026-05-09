@@ -4,16 +4,16 @@ kind: ConfigMap
 metadata:
   name: words
 data:
-  PROJECT_DOMAIN: api.words.example.com
-  ADMIN_EMAIL: admin@example.com
+  PROJECT_DOMAIN: api.words.samarchyan.me
+  ADMIN_EMAIL: desecho@gmail.com
   EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
-  EMAIL_HOST: smtp.example.com
-  EMAIL_HOST_USER: no-reply@example.com
+  EMAIL_HOST: smtp.gmail.com
+  EMAIL_HOST_USER: desecho@gmail.com
   DB_ENGINE: django.db.backends.mysql
   DB_NAME: words
   DB_HOST: mysql
   DB_PORT: "3306"
   DB_USER: words
-  STATIC_URL: https://static.words.example.com/
+  STATIC_URL: https://cdn.words.samarchyan.me/
   DJANGO_SETTINGS_MODULE: words.settings
-  FRONTEND_URL: https://words.example.com
+  FRONTEND_URL: https://words.samarchyan.me

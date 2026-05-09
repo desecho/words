@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - words.example.com
+        - words.samarchyan.me
       secretName: words-frontend-tls
   rules:
-    - host: words.example.com
+    - host: words.samarchyan.me
       http:
         paths:
           - pathType: Prefix
