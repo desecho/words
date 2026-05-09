@@ -6,8 +6,8 @@
   >
     <div class="copy-block">
       <p>
-        If email delivery is configured, you should receive a verification link shortly.
-        In development, the default backend prints the email to the server console.
+        If email delivery is configured, you should receive a verification link shortly. In development, the default
+        backend prints the email to the server console.
       </p>
       <v-btn color="primary" to="/login" variant="flat">Back to login</v-btn>
     </div>

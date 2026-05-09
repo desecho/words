@@ -1,15 +1,7 @@
 <template>
-  <PagePanel
-    eyebrow="Authentication"
-    title="Verifying your account"
-    :description="message"
-  >
+  <PagePanel eyebrow="Authentication" title="Verifying your account" :description="message">
     <div class="copy-block">
-      <v-progress-circular
-        v-if="loading"
-        color="primary"
-        indeterminate
-      />
+      <v-progress-circular v-if="loading" color="primary" indeterminate />
       <v-btn v-else color="primary" to="/login" variant="flat">Go to login</v-btn>
     </div>
   </PagePanel>
@@ -34,13 +26,14 @@ const loading = ref(true);
 const message = ref("Please wait while the verification link is confirmed.");
 
 onMounted(async () => {
-    try {
-        await axios.post(getUrl("user/verify-registration/"), {
-            signature: props.signature,
-            timestamp: props.timestamp,
-            "user_id": props.userId,
-        });
-        $toast.success("Registration verified.");
+  try {
+    await axios.post(getUrl("user/verify-registration/"), {
+      signature: props.signature,
+      timestamp: props.timestamp,
+      // eslint-disable-next-line camelcase
+      user_id: props.userId,
+    });
+    $toast.success("Registration verified.");
     message.value = "Your account is active. You can sign in now.";
     await router.push("/login");
   } catch (error: unknown) {

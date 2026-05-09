@@ -18,7 +18,11 @@ function nextNonEmptyLine(lines: string[], startIndex: number): string | null {
 }
 
 function isSubtitleIndexLine(value: string, nextLine: string | null): boolean {
-    return SUBTITLE_INDEX_RE.test(value) && nextLine !== null && isSubtitleTimestampLine(nextLine);
+    return (
+        SUBTITLE_INDEX_RE.test(value) &&
+        nextLine !== null &&
+        isSubtitleTimestampLine(nextLine)
+    );
 }
 
 export function processSubtitleText(value: string): string {

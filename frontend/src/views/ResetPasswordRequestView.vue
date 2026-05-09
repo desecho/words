@@ -5,11 +5,7 @@
     description="Enter your username and the backend will send a reset link."
   >
     <v-form class="form-stack" @submit.prevent="onSubmit">
-      <v-text-field
-        v-model="username"
-        label="Username"
-        :rules="[rules.required]"
-      />
+      <v-text-field v-model="username" label="Username" :rules="[rules.required]" />
 
       <div class="action-row">
         <v-btn

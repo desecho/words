@@ -1,19 +1,8 @@
 <template>
-  <PagePanel
-    eyebrow="Authentication"
-    title="Create an account"
-  >
+  <PagePanel eyebrow="Authentication" title="Create an account">
     <v-form class="form-stack" @submit.prevent="onSubmit">
-      <v-text-field
-        v-model="username"
-        label="Username"
-        :rules="[rules.required]"
-      />
-      <v-text-field
-        v-model="email"
-        label="Email"
-        :rules="[rules.required, rules.email]"
-      />
+      <v-text-field v-model="username" label="Username" :rules="[rules.required]" />
+      <v-text-field v-model="email" label="Email" :rules="[rules.required, rules.email]" />
       <v-text-field
         v-model="password"
         label="Password"
@@ -24,13 +13,7 @@
       />
 
       <div class="action-row">
-        <v-btn
-          color="primary"
-          :disabled="!canSubmit || loading"
-          :loading="loading"
-          type="submit"
-          variant="flat"
-        >
+        <v-btn color="primary" :disabled="!canSubmit || loading" :loading="loading" type="submit" variant="flat">
           Register
         </v-btn>
       </div>
@@ -84,10 +67,9 @@ async function onSubmit(): Promise<void> {
   loading.value = true;
 
   try {
-    const availabilityResponse = await axios.post(
-      getUrl("user/check-email-availability/"),
-      { email: email.value.trim() },
-    );
+    const availabilityResponse = await axios.post(getUrl("user/check-email-availability/"), {
+      email: email.value.trim(),
+    });
 
     if (availabilityResponse.data !== true) {
       $toast.error("A user with this email is already registered.");

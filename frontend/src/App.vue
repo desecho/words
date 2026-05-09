@@ -40,9 +40,8 @@
     <v-footer class="app-footer" height="auto">
       <v-container class="app-footer__container">
         <p class="app-footer__copy">
-          &copy; {{ copyrightYears }}
-          <a :href="`mailto:${adminEmail}`" class="app-footer__link">{{ adminEmail }}</a>.
-          All rights reserved.
+          &copy; {{ copyrightYears }} <a :href="`mailto:${adminEmail}`" class="app-footer__link">{{ adminEmail }}</a
+          >. All rights reserved.
         </p>
       </v-container>
     </v-footer>
@@ -73,9 +72,7 @@ const FALLBACK_ADMIN_EMAIL = "admin@example.com";
 const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || FALLBACK_ADMIN_EMAIL;
 const currentYear = new Date().getFullYear();
 const copyrightYears =
-  currentYear > COPYRIGHT_START_YEAR
-    ? `${COPYRIGHT_START_YEAR} - ${currentYear}`
-    : `${COPYRIGHT_START_YEAR}`;
+  currentYear > COPYRIGHT_START_YEAR ? `${COPYRIGHT_START_YEAR} - ${currentYear}` : `${COPYRIGHT_START_YEAR}`;
 
 function toggleTheme(): void {
   theme.global.name.value = isDarkTheme.value ? WORDS_LIGHT_THEME : WORDS_DARK_THEME;

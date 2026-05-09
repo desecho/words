@@ -9,9 +9,7 @@
         <v-btn to="/texts" variant="text">Back to texts</v-btn>
       </div>
 
-      <div v-if="loading" class="text-detail-empty">
-        Loading text...
-      </div>
+      <div v-if="loading" class="text-detail-empty">Loading text...</div>
 
       <template v-else-if="text">
         <div class="text-detail-meta">
@@ -45,9 +43,7 @@
         </div>
       </template>
 
-      <div v-else class="text-detail-empty">
-        Unable to load this text.
-      </div>
+      <div v-else class="text-detail-empty">Unable to load this text.</div>
     </div>
   </PagePanel>
 </template>
@@ -56,25 +52,19 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
-import type {
-    StudyLanguage,
-    TextDetailResponse,
-    TextItem,
-    TextMatchSegment,
-    TextSegment,
-} from "../types";
+import type { StudyLanguage, TextDetailResponse, TextItem, TextMatchSegment, TextSegment } from "../types";
 
 import PagePanel from "../components/PagePanel.vue";
 import { getUrl } from "../helpers";
 import { $toast } from "../toast";
 
 const props = defineProps<{
-    id: string | string[];
+  id: string | string[];
 }>();
 
 const languageLabelByCode: Record<StudyLanguage, string> = {
-    en: "English",
-    fr: "French",
+  en: "English",
+  fr: "French",
 };
 
 const loading = ref(false);
@@ -82,50 +72,50 @@ const segments = ref<TextSegment[]>([]);
 const text = ref<TextItem | null>(null);
 
 function automaticMatchLabel(matchKind: TextMatchSegment["match_kind"]): string {
-    if (matchKind === "article") {
-        return "Article";
-    }
-    if (matchKind === "contraction") {
-        return "Contraction";
-    }
-    if (matchKind === "number_word") {
-        return "Number word";
-    }
-    return "Saved word";
+  if (matchKind === "article") {
+    return "Article";
+  }
+  if (matchKind === "contraction") {
+    return "Contraction";
+  }
+  if (matchKind === "number_word") {
+    return "Number word";
+  }
+  return "Saved word";
 }
 
 function formatDate(value: string): string {
-    return new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(new Date(value));
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 function getTextId(): number {
-    const rawId = Array.isArray(props.id) ? props.id[0] : props.id;
-    return Number(rawId);
+  const rawId = Array.isArray(props.id) ? props.id[0] : props.id;
+  return Number(rawId);
 }
 
 async function loadText(): Promise<void> {
-    loading.value = true;
+  loading.value = true;
 
-    try {
-        const response = await axios.get(getUrl(`texts/${getTextId()}/`));
-        const data = response.data as TextDetailResponse;
-        segments.value = data.segments;
-        text.value = data.text;
-    } catch (error: unknown) {
-        console.error(error);
-        text.value = null;
-        segments.value = [];
-        $toast.error("Unable to load the text.");
-    } finally {
-        loading.value = false;
-    }
+  try {
+    const response = await axios.get(getUrl(`texts/${getTextId()}/`));
+    const data = response.data as TextDetailResponse;
+    segments.value = data.segments;
+    text.value = data.text;
+  } catch (error: unknown) {
+    console.error(error);
+    text.value = null;
+    segments.value = [];
+    $toast.error("Unable to load the text.");
+  } finally {
+    loading.value = false;
+  }
 }
 
 onMounted(async () => {
-    await loadText();
+  await loadText();
 });
 </script>
 

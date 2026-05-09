@@ -10,9 +10,7 @@ export const WORDS_LIGHT_THEME = "wordsLight";
 export const WORDS_DARK_THEME = "wordsDark";
 export const WORDS_THEME_STORAGE_KEY = "words-theme";
 
-export type WordsThemeName =
-    | typeof WORDS_LIGHT_THEME
-    | typeof WORDS_DARK_THEME;
+export type WordsThemeName = typeof WORDS_LIGHT_THEME | typeof WORDS_DARK_THEME;
 
 function isWordsThemeName(value: string | null): value is WordsThemeName {
     return value === WORDS_LIGHT_THEME || value === WORDS_DARK_THEME;

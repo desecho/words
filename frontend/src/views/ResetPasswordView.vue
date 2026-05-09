@@ -57,14 +57,15 @@ async function onSubmit(): Promise<void> {
   loading.value = true;
 
   try {
-        await axios.post(getUrl("user/reset-password/"), {
-            password: password.value,
-            signature: props.signature,
-            timestamp: props.timestamp,
-            "user_id": props.userId,
-        });
-        $toast.success("Password updated.");
-        await router.push("/login");
+    await axios.post(getUrl("user/reset-password/"), {
+      password: password.value,
+      signature: props.signature,
+      timestamp: props.timestamp,
+      // eslint-disable-next-line camelcase
+      user_id: props.userId,
+    });
+    $toast.success("Password updated.");
+    await router.push("/login");
   } catch (error: unknown) {
     console.error(error);
     $toast.error("Unable to reset the password.");

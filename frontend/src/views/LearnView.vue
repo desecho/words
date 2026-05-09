@@ -22,12 +22,8 @@
       <section class="learn-section">
         <div class="learn-section__header">
           <div>
-            <h2 class="learn-section__title">
-              {{ selectedLanguageOption.title }} to Russian
-            </h2>
-            <p class="learn-section__description">
-              Sorted by the most recently missed words.
-            </p>
+            <h2 class="learn-section__title">{{ selectedLanguageOption.title }} to Russian</h2>
+            <p class="learn-section__description">Sorted by the most recently missed words.</p>
           </div>
 
           <div class="learn-section__actions">
@@ -44,22 +40,14 @@
           </div>
         </div>
 
-        <div v-if="loadingWords && incorrectWords.length === 0" class="learn-state">
-          Loading incorrect words...
-        </div>
-        <div
-          v-else-if="loadFailed && incorrectWords.length === 0"
-          class="learn-state learn-state--error"
-        >
+        <div v-if="loadingWords && incorrectWords.length === 0" class="learn-state">Loading incorrect words...</div>
+        <div v-else-if="loadFailed && incorrectWords.length === 0" class="learn-state learn-state--error">
           <div class="learn-state__title">Unable to load your Learn list.</div>
           <p>Try again once the backend is available.</p>
         </div>
         <div v-else-if="incorrectWords.length === 0" class="learn-state">
           <div class="learn-state__title">No incorrect words right now.</div>
-          <p>
-            {{ selectedLanguageOption.title }} words will appear here after they are
-            graded as incorrect in Study.
-          </p>
+          <p>{{ selectedLanguageOption.title }} words will appear here after they are graded as incorrect in Study.</p>
         </div>
         <div v-else class="learn-table-shell">
           <table class="learn-table">
@@ -71,10 +59,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="word in incorrectWords"
-                :key="`${word.language}-${word.record_id}`"
-              >
+              <tr v-for="word in incorrectWords" :key="`${word.language}-${word.record_id}`">
                 <td class="learn-table__prompt">{{ word.prompt }}</td>
                 <td>{{ word.ru }}</td>
                 <td>{{ word.part_of_speech_label }}</td>
@@ -120,9 +105,7 @@ const loadingWords = ref(false);
 const loadFailed = ref(false);
 
 const selectedLanguageOption = computed(
-  () =>
-    languageOptions.find((option) => option.code === selectedLanguage.value) ??
-    languageOptions[0],
+  () => languageOptions.find((option) => option.code === selectedLanguage.value) ?? languageOptions[0],
 );
 
 const resultsLabel = computed(() => {

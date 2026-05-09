@@ -1,4 +1,7 @@
-export function getQueryParamAsNumber(value: unknown, fallback: number): number {
+export function getQueryParamAsNumber(
+    value: unknown,
+    fallback: number,
+): number {
     if (typeof value === "string") {
         const parsedValue = Number(value);
         return Number.isFinite(parsedValue) ? parsedValue : fallback;
@@ -11,7 +14,10 @@ export function getQueryParamAsNumber(value: unknown, fallback: number): number 
     return fallback;
 }
 
-export function getQueryParamAsString(value: unknown, fallback: string): string {
+export function getQueryParamAsString(
+    value: unknown,
+    fallback: string,
+): string {
     if (typeof value === "string") {
         return value;
     }

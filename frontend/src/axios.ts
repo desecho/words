@@ -19,7 +19,8 @@ function requestPath(config: AxiosRequestConfig): string {
     }
 
     try {
-        return new URL(config.url, config.baseURL ?? "http://localhost").pathname;
+        return new URL(config.url, config.baseURL ?? "http://localhost")
+            .pathname;
     } catch {
         return config.url;
     }

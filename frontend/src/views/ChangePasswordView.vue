@@ -1,8 +1,5 @@
 <template>
-  <PagePanel
-    eyebrow="Account"
-    title="Change password"
-  >
+  <PagePanel eyebrow="Account" title="Change password">
     <v-form class="form-stack" @submit.prevent="onSubmit">
       <v-text-field
         v-model="oldPassword"
@@ -22,13 +19,7 @@
       />
 
       <div class="action-row">
-        <v-btn
-          color="primary"
-          :disabled="!canSubmit || loading"
-          :loading="loading"
-          type="submit"
-          variant="flat"
-        >
+        <v-btn color="primary" :disabled="!canSubmit || loading" :loading="loading" type="submit" variant="flat">
           Save password
         </v-btn>
       </div>
@@ -64,13 +55,14 @@ async function onSubmit(): Promise<void> {
 
   loading.value = true;
 
-    try {
-        await axios.post(getUrl("user/change-password/"), {
-            password: password.value,
-            "old_password": oldPassword.value,
-        });
-        $toast.success("Password changed.");
-        await router.push("/study");
+  try {
+    await axios.post(getUrl("user/change-password/"), {
+      password: password.value,
+      // eslint-disable-next-line camelcase
+      old_password: oldPassword.value,
+    });
+    $toast.success("Password changed.");
+    await router.push("/study");
   } catch (error: unknown) {
     console.error(error);
     $toast.error("Unable to change the password.");

@@ -1,27 +1,11 @@
 <template>
-  <PagePanel
-    eyebrow="Words"
-    title="Words"
-    description="Search, edit, and remove the words you've added."
-  >
+  <PagePanel eyebrow="Words" title="Words" description="Search, edit, and remove the words you've added.">
     <section class="words-section">
       <div class="words-section__header">
         <h2 class="words-section__title">Your words</h2>
         <div class="words-section__actions">
-          <v-btn
-            color="primary"
-            to="/words/new"
-            variant="flat"
-          >
-            Add word
-          </v-btn>
-          <v-btn
-            size="small"
-            variant="text"
-            :disabled="loadingWords"
-            :loading="loadingWords"
-            @click="loadWords"
-          >
+          <v-btn color="primary" to="/words/new" variant="flat"> Add word </v-btn>
+          <v-btn size="small" variant="text" :disabled="loadingWords" :loading="loadingWords" @click="loadWords">
             Refresh
           </v-btn>
         </div>
@@ -35,18 +19,12 @@
         :loading="loadingWords"
       />
 
-      <div v-if="loadingWords && words.length === 0" class="words-empty">
-        Loading words...
-      </div>
+      <div v-if="loadingWords && words.length === 0" class="words-empty">Loading words...</div>
       <div v-else-if="words.length === 0" class="words-empty">
         {{ wordsEmptyMessage }}
       </div>
       <div v-else class="words-list">
-        <article
-          v-for="word in words"
-          :key="word.id"
-          class="word-card"
-        >
+        <article v-for="word in words" :key="word.id" class="word-card">
           <div class="word-card__header">
             <div>
               <h3 class="word-card__title">{{ word.ru }}</h3>
@@ -106,21 +84,9 @@
         <v-card-title>Edit word</v-card-title>
         <v-card-text>
           <v-form id="edit-word-form" class="form-stack" @submit.prevent="onSaveEdit">
-            <v-text-field
-              v-model="editForm.ru"
-              label="Russian"
-              :error-messages="editFieldErrors.ru"
-            />
-            <v-text-field
-              v-model="editForm.en"
-              label="English"
-              :error-messages="editFieldErrors.en"
-            />
-            <v-text-field
-              v-model="editForm.fr"
-              label="French"
-              :error-messages="editFieldErrors.fr"
-            />
+            <v-text-field v-model="editForm.ru" label="Russian" :error-messages="editFieldErrors.ru" />
+            <v-text-field v-model="editForm.en" label="English" :error-messages="editFieldErrors.en" />
+            <v-text-field v-model="editForm.fr" label="French" :error-messages="editFieldErrors.fr" />
             <v-select
               v-model="editForm.part_of_speech_id"
               :disabled="loadingOptions || savingEdit"
@@ -130,11 +96,7 @@
               item-value="id"
               label="Part of speech"
             />
-            <v-text-field
-              v-model="editForm.comment"
-              label="Comment"
-              :error-messages="editFieldErrors.comment"
-            />
+            <v-text-field v-model="editForm.comment" label="Comment" :error-messages="editFieldErrors.comment" />
 
             <div v-if="editFieldErrors.non_field_errors.length > 0" class="form-error">
               {{ editFieldErrors.non_field_errors[0] }}
@@ -143,20 +105,8 @@
         </v-card-text>
         <v-card-actions class="dialog-actions">
           <v-spacer />
-          <v-btn
-            variant="text"
-            :disabled="savingEdit"
-            @click="closeEditDialog"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-            color="primary"
-            form="edit-word-form"
-            :loading="savingEdit"
-            type="submit"
-            variant="flat"
-          >
+          <v-btn variant="text" :disabled="savingEdit" @click="closeEditDialog"> Cancel </v-btn>
+          <v-btn color="primary" form="edit-word-form" :loading="savingEdit" type="submit" variant="flat">
             Save changes
           </v-btn>
         </v-card-actions>
@@ -176,13 +126,7 @@
         </v-card-text>
         <v-card-actions class="dialog-actions">
           <v-spacer />
-          <v-btn
-            variant="text"
-            :disabled="deletingWordId !== null"
-            @click="closeDeleteDialog"
-          >
-            Cancel
-          </v-btn>
+          <v-btn variant="text" :disabled="deletingWordId !== null" @click="closeDeleteDialog"> Cancel </v-btn>
           <v-btn
             color="error"
             :disabled="wordPendingDeletion === null"
@@ -200,22 +144,15 @@
 
 <script lang="ts" setup>
 import axios, { isAxiosError } from "axios";
-import {
-    computed,
-    onBeforeUnmount,
-    onMounted,
-    reactive,
-    ref,
-    watch,
-} from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 
 import type {
-    PartOfSpeechListResponse,
-    PartOfSpeechOption,
-    UpdateWordRequest,
-    WordItem,
-    WordListResponse,
-    WordResponse,
+  PartOfSpeechListResponse,
+  PartOfSpeechOption,
+  UpdateWordRequest,
+  WordItem,
+  WordListResponse,
+  WordResponse,
 } from "../types";
 import type { Ref } from "vue";
 
@@ -224,41 +161,44 @@ import { getUrl } from "../helpers";
 import { $toast } from "../toast";
 
 type WordFormErrors = {
-    comment: string[];
-    en: string[];
-    fr: string[];
-    "non_field_errors": string[];
-    "part_of_speech_id": string[];
-    ru: string[];
+  comment: string[];
+  en: string[];
+  fr: string[];
+  non_field_errors: string[];
+  part_of_speech_id: string[];
+  ru: string[];
 };
 
 type WordFormState = {
-    comment: string;
-    en: string;
-    fr: string;
-    "part_of_speech_id": number | null;
-    ru: string;
+  comment: string;
+  en: string;
+  fr: string;
+  part_of_speech_id: number | null;
+  ru: string;
 };
 
 function createEmptyWordForm(): WordFormState {
-    return {
-        comment: "",
-        en: "",
-        fr: "",
-        "part_of_speech_id": null,
-        ru: "",
-    };
+  return {
+    comment: "",
+    en: "",
+    fr: "",
+    // eslint-disable-next-line camelcase
+    part_of_speech_id: null,
+    ru: "",
+  };
 }
 
 function createEmptyWordFormErrors(): WordFormErrors {
-    return {
-        comment: [],
-        en: [],
-        fr: [],
-        "non_field_errors": [],
-        "part_of_speech_id": [],
-        ru: [],
-    };
+  return {
+    comment: [],
+    en: [],
+    fr: [],
+    // eslint-disable-next-line camelcase
+    non_field_errors: [],
+    // eslint-disable-next-line camelcase
+    part_of_speech_id: [],
+    ru: [],
+  };
 }
 
 const editForm = reactive<WordFormState>(createEmptyWordForm());
@@ -275,271 +215,263 @@ const wordPendingDeletion = ref<WordItem | null>(null);
 const words = ref<WordItem[]>([]);
 
 const partOfSpeechItems = computed(() =>
-    partOfSpeechOptions.value.map((option) => ({
-        ...option,
-        label: `${option.name} (${option.abbreviation})`,
-    })),
+  partOfSpeechOptions.value.map((option) => ({
+    ...option,
+    label: `${option.name} (${option.abbreviation})`,
+  })),
 );
 const normalizedSearchQuery = computed(() => searchQuery.value?.trim() ?? "");
 const wordsEmptyMessage = computed(() =>
-    normalizedSearchQuery.value.length > 0
-        ? "No words match this search."
-        : "No words yet. Add one to start building your list.",
+  normalizedSearchQuery.value.length > 0
+    ? "No words match this search."
+    : "No words yet. Add one to start building your list.",
 );
 
 let latestLoadWordsRequestId = 0;
 let searchTimer: ReturnType<typeof window.setTimeout> | null = null;
 
 function resetFieldErrors(fieldErrors: Ref<WordFormErrors>): void {
-    fieldErrors.value = createEmptyWordFormErrors();
+  fieldErrors.value = createEmptyWordFormErrors();
 }
 
 function resetWordForm(form: WordFormState): void {
-    Object.assign(form, createEmptyWordForm());
+  Object.assign(form, createEmptyWordForm());
 }
 
 function populateWordForm(form: WordFormState, word: WordItem): void {
-    Object.assign(form, {
-        comment: word.comment,
-        en: word.en,
-        fr: word.fr,
-        "part_of_speech_id": word.part_of_speech.id,
-        ru: word.ru,
-    });
+  Object.assign(form, {
+    comment: word.comment,
+    en: word.en,
+    fr: word.fr,
+    // eslint-disable-next-line camelcase
+    part_of_speech_id: word.part_of_speech.id,
+    ru: word.ru,
+  });
 }
 
-function validateWordForm(
-    form: WordFormState,
-    fieldErrors: Ref<WordFormErrors>,
-): boolean {
-    resetFieldErrors(fieldErrors);
+function validateWordForm(form: WordFormState, fieldErrors: Ref<WordFormErrors>): boolean {
+  resetFieldErrors(fieldErrors);
 
-    if (form.ru.trim().length === 0) {
-        fieldErrors.value.ru = ["Russian is required."];
-    }
-    if (form["part_of_speech_id"] === null) {
-        fieldErrors.value["part_of_speech_id"] = ["Part of speech is required."];
-    }
-    if (form.en.trim().length === 0 && form.fr.trim().length === 0) {
-        fieldErrors.value["non_field_errors"] = [
-            "Provide at least one of English or French.",
-        ];
-    }
+  if (form.ru.trim().length === 0) {
+    fieldErrors.value.ru = ["Russian is required."];
+  }
+  if (form["part_of_speech_id"] === null) {
+    fieldErrors.value["part_of_speech_id"] = ["Part of speech is required."];
+  }
+  if (form.en.trim().length === 0 && form.fr.trim().length === 0) {
+    fieldErrors.value["non_field_errors"] = ["Provide at least one of English or French."];
+  }
 
-    return Object.values(fieldErrors.value).every((messages) => messages.length === 0);
+  return Object.values(fieldErrors.value).every((messages) => messages.length === 0);
 }
 
-function applyServerErrors(
-    errorData: Record<string, unknown>,
-    fieldErrors: Ref<WordFormErrors>,
-): void {
-    resetFieldErrors(fieldErrors);
+function applyServerErrors(errorData: Record<string, unknown>, fieldErrors: Ref<WordFormErrors>): void {
+  resetFieldErrors(fieldErrors);
 
-    for (const [key, value] of Object.entries(errorData)) {
-        if (!Array.isArray(value)) {
-            continue;
-        }
-        const messages = value.filter((item): item is string => typeof item === "string");
-        if (key in fieldErrors.value) {
-            fieldErrors.value[key as keyof WordFormErrors] = messages;
-        }
+  for (const [key, value] of Object.entries(errorData)) {
+    if (!Array.isArray(value)) {
+      continue;
     }
+    const messages = value.filter((item): item is string => typeof item === "string");
+    if (key in fieldErrors.value) {
+      fieldErrors.value[key as keyof WordFormErrors] = messages;
+    }
+  }
 }
 
 function buildWordPayload(form: WordFormState): UpdateWordRequest {
-    return {
-        comment: form.comment.trim(),
-        en: form.en.trim(),
-        fr: form.fr.trim(),
-        "part_of_speech_id": form["part_of_speech_id"],
-        ru: form.ru.trim(),
-    };
+  return {
+    comment: form.comment.trim(),
+    en: form.en.trim(),
+    fr: form.fr.trim(),
+    // eslint-disable-next-line camelcase
+    part_of_speech_id: form["part_of_speech_id"],
+    ru: form.ru.trim(),
+  };
 }
 
 function formatDate(value: string): string {
-    return new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(new Date(value));
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 function formatPartOfSpeech(option: PartOfSpeechOption): string {
-    return `${option.name} (${option.abbreviation})`;
+  return `${option.name} (${option.abbreviation})`;
 }
 
 async function loadPartOfSpeechOptions(): Promise<void> {
-    loadingOptions.value = true;
+  loadingOptions.value = true;
 
-    try {
-        const response = await axios.get(getUrl("parts-of-speech/"));
-        const data = response.data as PartOfSpeechListResponse;
-        partOfSpeechOptions.value = data.parts_of_speech;
-    } catch (error: unknown) {
-        console.error(error);
-        $toast.error("Unable to load parts of speech.");
-    } finally {
-        loadingOptions.value = false;
-    }
+  try {
+    const response = await axios.get(getUrl("parts-of-speech/"));
+    const data = response.data as PartOfSpeechListResponse;
+    partOfSpeechOptions.value = data.parts_of_speech;
+  } catch (error: unknown) {
+    console.error(error);
+    $toast.error("Unable to load parts of speech.");
+  } finally {
+    loadingOptions.value = false;
+  }
 }
 
 async function loadWords(): Promise<void> {
-    const requestId = latestLoadWordsRequestId + 1;
-    latestLoadWordsRequestId = requestId;
-    loadingWords.value = true;
+  const requestId = latestLoadWordsRequestId + 1;
+  latestLoadWordsRequestId = requestId;
+  loadingWords.value = true;
 
-    try {
-        const search = normalizedSearchQuery.value;
-        const response = await axios.get(getUrl("words/"), {
-            params: search.length > 0 ? { search } : {},
-        });
-        const data = response.data as WordListResponse;
-        if (requestId === latestLoadWordsRequestId) {
-            words.value = data.words;
-        }
-    } catch (error: unknown) {
-        console.error(error);
-        if (requestId === latestLoadWordsRequestId) {
-            $toast.error("Unable to load words.");
-        }
-    } finally {
-        if (requestId === latestLoadWordsRequestId) {
-            loadingWords.value = false;
-        }
+  try {
+    const search = normalizedSearchQuery.value;
+    const response = await axios.get(getUrl("words/"), {
+      params: search.length > 0 ? { search } : {},
+    });
+    const data = response.data as WordListResponse;
+    if (requestId === latestLoadWordsRequestId) {
+      words.value = data.words;
     }
+  } catch (error: unknown) {
+    console.error(error);
+    if (requestId === latestLoadWordsRequestId) {
+      $toast.error("Unable to load words.");
+    }
+  } finally {
+    if (requestId === latestLoadWordsRequestId) {
+      loadingWords.value = false;
+    }
+  }
 }
 
 function openEditDialog(word: WordItem): void {
-    if (savingEdit.value || deletingWordId.value !== null) {
-        return;
-    }
+  if (savingEdit.value || deletingWordId.value !== null) {
+    return;
+  }
 
-    editingWordId.value = word.id;
-    populateWordForm(editForm, word);
-    resetFieldErrors(editFieldErrors);
-    editDialogOpen.value = true;
+  editingWordId.value = word.id;
+  populateWordForm(editForm, word);
+  resetFieldErrors(editFieldErrors);
+  editDialogOpen.value = true;
 }
 
 function closeEditDialog(force = false): void {
-    if (savingEdit.value && !force) {
-        return;
-    }
+  if (savingEdit.value && !force) {
+    return;
+  }
 
-    editDialogOpen.value = false;
-    editingWordId.value = null;
-    resetWordForm(editForm);
-    resetFieldErrors(editFieldErrors);
+  editDialogOpen.value = false;
+  editingWordId.value = null;
+  resetWordForm(editForm);
+  resetFieldErrors(editFieldErrors);
 }
 
 function onEditDialogModelValueChange(value: boolean): void {
-    if (!value) {
-        closeEditDialog();
-    }
+  if (!value) {
+    closeEditDialog();
+  }
 }
 
 function openDeleteDialog(word: WordItem): void {
-    if (deletingWordId.value !== null || savingEdit.value) {
-        return;
-    }
+  if (deletingWordId.value !== null || savingEdit.value) {
+    return;
+  }
 
-    wordPendingDeletion.value = word;
+  wordPendingDeletion.value = word;
 }
 
 function closeDeleteDialog(force = false): void {
-    if (deletingWordId.value !== null && !force) {
-        return;
-    }
+  if (deletingWordId.value !== null && !force) {
+    return;
+  }
 
-    wordPendingDeletion.value = null;
+  wordPendingDeletion.value = null;
 }
 
 function onDeleteDialogModelValueChange(value: boolean): void {
-    if (!value) {
-        closeDeleteDialog();
-    }
+  if (!value) {
+    closeDeleteDialog();
+  }
 }
 
 async function onSaveEdit(): Promise<void> {
-    if (editingWordId.value === null) {
-        return;
+  if (editingWordId.value === null) {
+    return;
+  }
+  if (!validateWordForm(editForm, editFieldErrors)) {
+    return;
+  }
+
+  savingEdit.value = true;
+
+  try {
+    const response = await axios.patch<WordResponse>(
+      getUrl(`words/${editingWordId.value}/`),
+      buildWordPayload(editForm),
+    );
+
+    if (normalizedSearchQuery.value.length === 0) {
+      words.value = words.value.map((word) => (word.id === response.data.word.id ? response.data.word : word));
+    } else {
+      await loadWords();
     }
-    if (!validateWordForm(editForm, editFieldErrors)) {
-        return;
+
+    closeEditDialog(true);
+    $toast.success("Word updated.");
+  } catch (error: unknown) {
+    console.error(error);
+    if (isAxiosError(error) && error.response?.data) {
+      applyServerErrors(error.response.data as Record<string, unknown>, editFieldErrors);
+    } else {
+      $toast.error("Unable to update the word.");
     }
-
-    savingEdit.value = true;
-
-    try {
-        const response = await axios.patch<WordResponse>(
-            getUrl(`words/${editingWordId.value}/`),
-            buildWordPayload(editForm),
-        );
-
-        if (normalizedSearchQuery.value.length === 0) {
-            words.value = words.value.map((word) =>
-                word.id === response.data.word.id ? response.data.word : word,
-            );
-        } else {
-            await loadWords();
-        }
-
-        closeEditDialog(true);
-        $toast.success("Word updated.");
-    } catch (error: unknown) {
-        console.error(error);
-        if (isAxiosError(error) && error.response?.data) {
-            applyServerErrors(error.response.data as Record<string, unknown>, editFieldErrors);
-        } else {
-            $toast.error("Unable to update the word.");
-        }
-    } finally {
-        savingEdit.value = false;
-    }
+  } finally {
+    savingEdit.value = false;
+  }
 }
 
 async function onConfirmDelete(): Promise<void> {
-    if (wordPendingDeletion.value === null) {
-        return;
+  if (wordPendingDeletion.value === null) {
+    return;
+  }
+
+  const wordToDelete = wordPendingDeletion.value;
+  deletingWordId.value = wordToDelete.id;
+
+  try {
+    await axios.delete(getUrl(`words/${wordToDelete.id}/`));
+    words.value = words.value.filter((word) => word.id !== wordToDelete.id);
+
+    if (editingWordId.value === wordToDelete.id) {
+      closeEditDialog();
     }
 
-    const wordToDelete = wordPendingDeletion.value;
-    deletingWordId.value = wordToDelete.id;
-
-    try {
-        await axios.delete(getUrl(`words/${wordToDelete.id}/`));
-        words.value = words.value.filter((word) => word.id !== wordToDelete.id);
-
-        if (editingWordId.value === wordToDelete.id) {
-            closeEditDialog();
-        }
-
-        closeDeleteDialog(true);
-        $toast.success("Word deleted.");
-    } catch (error: unknown) {
-        console.error(error);
-        $toast.error("Unable to delete the word.");
-    } finally {
-        deletingWordId.value = null;
-    }
+    closeDeleteDialog(true);
+    $toast.success("Word deleted.");
+  } catch (error: unknown) {
+    console.error(error);
+    $toast.error("Unable to delete the word.");
+  } finally {
+    deletingWordId.value = null;
+  }
 }
 
 watch(searchQuery, () => {
-    if (searchTimer !== null) {
-        window.clearTimeout(searchTimer);
-    }
+  if (searchTimer !== null) {
+    window.clearTimeout(searchTimer);
+  }
 
-    searchTimer = window.setTimeout(() => {
-        void loadWords();
-    }, 250);
+  searchTimer = window.setTimeout(() => {
+    void loadWords();
+  }, 250);
 });
 
 onMounted(async () => {
-    await Promise.all([loadPartOfSpeechOptions(), loadWords()]);
+  await Promise.all([loadPartOfSpeechOptions(), loadWords()]);
 });
 
 onBeforeUnmount(() => {
-    if (searchTimer !== null) {
-        window.clearTimeout(searchTimer);
-    }
+  if (searchTimer !== null) {
+    window.clearTimeout(searchTimer);
+  }
 });
 </script>
 

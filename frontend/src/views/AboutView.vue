@@ -6,9 +6,8 @@
   >
     <div class="copy-block">
       <p>
-        The project is built around a simple workflow: save English or French vocabulary with
-        Russian translations, keep useful texts in one place, and return to the words that are
-        due for review.
+        The project is built around a simple workflow: save English or French vocabulary with Russian translations,
+        keep useful texts in one place, and return to the words that are due for review.
       </p>
 
       <div class="hero-grid">
@@ -31,8 +30,8 @@
       </div>
 
       <p class="about-stack">
-        The application uses Django and Django REST Framework on the backend, with Vue 3,
-        TypeScript, Vuetify, and Pinia on the frontend.
+        The application uses Django and Django REST Framework on the backend, with Vue 3, TypeScript, Vuetify, and
+        Pinia on the frontend.
       </p>
 
       <div class="hero-actions">

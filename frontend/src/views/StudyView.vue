@@ -27,32 +27,24 @@
 
       <div class="study-card-shell">
         <div class="study-card-shell__topline">
-          <div class="study-card-shell__label">
-            {{ summary[selectedLanguage].label }} prompt
-          </div>
+          <div class="study-card-shell__label">{{ summary[selectedLanguage].label }} prompt</div>
           <div class="study-card-shell__counts">
             <span>{{ summary[selectedLanguage].due }} due</span>
             <span>{{ summary[selectedLanguage].unseen }} unseen</span>
           </div>
         </div>
 
-        <div v-if="loadingCard" class="study-status">
-          Loading the next card...
-        </div>
+        <div v-if="loadingCard" class="study-status">Loading the next card...</div>
 
         <template v-else-if="card">
           <v-sheet class="study-card" elevation="0">
             <div class="study-card__prompt">{{ card.prompt }}</div>
-            <div class="study-card__instruction">
-              Think of the Russian meaning before you reveal it.
-            </div>
+            <div class="study-card__instruction">Think of the Russian meaning before you reveal it.</div>
 
             <div v-if="revealed" class="study-card__answer">
               {{ card.answer }}
             </div>
-            <div v-else class="study-card__answer study-card__answer--hidden">
-              Translation hidden
-            </div>
+            <div v-else class="study-card__answer study-card__answer--hidden">Translation hidden</div>
           </v-sheet>
 
           <div class="study-shortcuts" aria-label="Keyboard shortcuts">
@@ -61,24 +53,14 @@
               <kbd class="study-shortcut-key">Space</kbd>
               Show translation
             </span>
-            <span
-              v-for="grade in gradeOptions"
-              :key="grade.value"
-              class="study-shortcuts__item"
-            >
+            <span v-for="grade in gradeOptions" :key="grade.value" class="study-shortcuts__item">
               <kbd class="study-shortcut-key">{{ grade.shortcut }}</kbd>
               {{ grade.label }}
             </span>
           </div>
 
           <div class="study-actions">
-            <v-btn
-              color="primary"
-              :disabled="reviewLoading"
-              size="large"
-              variant="flat"
-              @click="revealed = true"
-            >
+            <v-btn color="primary" :disabled="reviewLoading" size="large" variant="flat" @click="revealed = true">
               <span class="study-button-content">
                 <span>Show translation</span>
                 <kbd class="study-shortcut-key">Space</kbd>
@@ -105,8 +87,8 @@
         <v-sheet v-else class="study-empty" elevation="0">
           <div class="study-empty__title">No cards are available right now.</div>
           <p>
-            This language has no due or unseen study cards yet. Add more eligible
-            records or come back when the next reviews are due.
+            This language has no due or unseen study cards yet. Add more eligible records or come back when the next
+            reviews are due.
           </p>
         </v-sheet>
       </div>
@@ -119,12 +101,12 @@ import axios from "axios";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 import type {
-    StudyCard,
-    StudyCardResponse,
-    StudyGrade,
-    StudyLanguage,
-    StudyReviewResponse,
-    StudySummary,
+  StudyCard,
+  StudyCardResponse,
+  StudyGrade,
+  StudyLanguage,
+  StudyReviewResponse,
+  StudySummary,
 } from "../types";
 
 import PagePanel from "../components/PagePanel.vue";
@@ -132,54 +114,54 @@ import { getUrl } from "../helpers";
 import { $toast } from "../toast";
 
 const languageOptions: Array<{
-    code: StudyLanguage;
-    cue: string;
-    title: string;
+  code: StudyLanguage;
+  cue: string;
+  title: string;
 }> = [
-    {
-        code: "en",
-        cue: "English -> Russian",
-        title: "English",
-    },
-    {
-        code: "fr",
-        cue: "French -> Russian",
-        title: "French",
-    },
+  {
+    code: "en",
+    cue: "English -> Russian",
+    title: "English",
+  },
+  {
+    code: "fr",
+    cue: "French -> Russian",
+    title: "French",
+  },
 ];
 
 const gradeOptions: Array<{
-    color: string;
-    label: string;
-    requiresIgnoreableCard: boolean;
-    shortcut: string;
-    value: StudyGrade;
-    variant: "flat" | "outlined";
+  color: string;
+  label: string;
+  requiresIgnoreableCard: boolean;
+  shortcut: string;
+  value: StudyGrade;
+  variant: "flat" | "outlined";
 }> = [
-    {
-        color: "primary",
-        label: "Incorrect",
-        requiresIgnoreableCard: false,
-        shortcut: "1",
-        value: "incorrect",
-        variant: "outlined",
-    },
-    {
-        color: "secondary",
-        label: "Correct",
-        requiresIgnoreableCard: false,
-        shortcut: "2",
-        value: "correct",
-        variant: "flat",
-    },
-    {
-        color: "secondary",
-        label: "Ignore",
-        requiresIgnoreableCard: true,
-        shortcut: "3",
-        value: "ignore",
-        variant: "outlined",
-    },
+  {
+    color: "primary",
+    label: "Incorrect",
+    requiresIgnoreableCard: false,
+    shortcut: "1",
+    value: "incorrect",
+    variant: "outlined",
+  },
+  {
+    color: "secondary",
+    label: "Correct",
+    requiresIgnoreableCard: false,
+    shortcut: "2",
+    value: "correct",
+    variant: "flat",
+  },
+  {
+    color: "secondary",
+    label: "Ignore",
+    requiresIgnoreableCard: true,
+    shortcut: "3",
+    value: "ignore",
+    variant: "outlined",
+  },
 ];
 
 const selectedLanguage = ref<StudyLanguage>("en");
@@ -188,175 +170,157 @@ const loadingCard = ref(false);
 const pendingGrade = ref<StudyGrade | null>(null);
 const revealed = ref(false);
 const summary = ref<StudySummary["summary"]>({
-    en: { due: 0, label: "English", unseen: 0 },
-    fr: { due: 0, label: "French", unseen: 0 },
+  en: { due: 0, label: "English", unseen: 0 },
+  fr: { due: 0, label: "French", unseen: 0 },
 });
 
 const reviewLoading = computed(() => pendingGrade.value !== null);
 
 async function loadSummary(showErrorToast = true): Promise<void> {
-    try {
-        const response = await axios.get(getUrl("study/summary/"));
-        const data = response.data as StudySummary;
-        summary.value = data.summary;
-    } catch (error: unknown) {
-        console.error(error);
-        if (showErrorToast) {
-            $toast.error("Unable to load study counts.");
-        }
+  try {
+    const response = await axios.get(getUrl("study/summary/"));
+    const data = response.data as StudySummary;
+    summary.value = data.summary;
+  } catch (error: unknown) {
+    console.error(error);
+    if (showErrorToast) {
+      $toast.error("Unable to load study counts.");
     }
+  }
 }
 
 async function loadCard(language: StudyLanguage): Promise<void> {
-    loadingCard.value = true;
-    revealed.value = false;
-    const requestedLanguage = language;
+  loadingCard.value = true;
+  revealed.value = false;
+  const requestedLanguage = language;
 
-    try {
-        const response = await axios.get(getUrl("study/next-card/"), {
-            params: { language },
-        });
-        const data = response.data as StudyCardResponse;
-        if (selectedLanguage.value === requestedLanguage) {
-            card.value = data.card;
-        }
-    } catch (error: unknown) {
-        console.error(error);
-        if (selectedLanguage.value === requestedLanguage) {
-            card.value = null;
-        }
-        $toast.error("Unable to load the next study card.");
-    } finally {
-        if (selectedLanguage.value === requestedLanguage) {
-            loadingCard.value = false;
-        }
+  try {
+    const response = await axios.get(getUrl("study/next-card/"), {
+      params: { language },
+    });
+    const data = response.data as StudyCardResponse;
+    if (selectedLanguage.value === requestedLanguage) {
+      card.value = data.card;
     }
+  } catch (error: unknown) {
+    console.error(error);
+    if (selectedLanguage.value === requestedLanguage) {
+      card.value = null;
+    }
+    $toast.error("Unable to load the next study card.");
+  } finally {
+    if (selectedLanguage.value === requestedLanguage) {
+      loadingCard.value = false;
+    }
+  }
 }
 
 function reviewableCardForGrade(grade: StudyGrade): StudyCard | null {
-    if (card.value === null || !revealed.value || reviewLoading.value) {
-        return null;
-    }
-    if (grade === "ignore" && !card.value.can_ignore) {
-        return null;
-    }
+  if (card.value === null || !revealed.value || reviewLoading.value) {
+    return null;
+  }
+  if (grade === "ignore" && !card.value.can_ignore) {
+    return null;
+  }
 
-    return card.value;
+  return card.value;
 }
 
 async function submitGrade(grade: StudyGrade): Promise<void> {
-    const reviewCard = reviewableCardForGrade(grade);
-    if (reviewCard === null) {
-        return;
-    }
+  const reviewCard = reviewableCardForGrade(grade);
+  if (reviewCard === null) {
+    return;
+  }
 
-    const recordIdKey = "record_id";
-    const reviewLanguage = selectedLanguage.value;
-    pendingGrade.value = grade;
+  const recordIdKey = "record_id";
+  const reviewLanguage = selectedLanguage.value;
+  pendingGrade.value = grade;
 
-    try {
-        const response = await axios.post(getUrl("study/review/"), {
-            grade,
-            language: reviewLanguage,
-            [recordIdKey]: reviewCard.record_id,
-        });
-        const data = response.data as StudyReviewResponse;
-        if (selectedLanguage.value === reviewLanguage) {
-            card.value = data.next_card;
-            revealed.value = false;
-        }
-        await loadSummary(false);
-    } catch (error: unknown) {
-        console.error(error);
-        $toast.error("Unable to save the study result.");
-    } finally {
-        pendingGrade.value = null;
+  try {
+    const response = await axios.post(getUrl("study/review/"), {
+      grade,
+      language: reviewLanguage,
+      [recordIdKey]: reviewCard.record_id,
+    });
+    const data = response.data as StudyReviewResponse;
+    if (selectedLanguage.value === reviewLanguage) {
+      card.value = data.next_card;
+      revealed.value = false;
     }
+    await loadSummary(false);
+  } catch (error: unknown) {
+    console.error(error);
+    $toast.error("Unable to save the study result.");
+  } finally {
+    pendingGrade.value = null;
+  }
 }
 
 watch(selectedLanguage, async (language, previousLanguage) => {
-    if (language === previousLanguage) {
-        return;
-    }
-    await loadCard(language);
+  if (language === previousLanguage) {
+    return;
+  }
+  await loadCard(language);
 });
 
-function isGradeDisabled(
-    grade: (typeof gradeOptions)[number],
-): boolean {
-    return (
-        !revealed.value ||
-        reviewLoading.value ||
-        (grade.requiresIgnoreableCard && card.value?.can_ignore === false)
-    );
+function isGradeDisabled(grade: (typeof gradeOptions)[number]): boolean {
+  return !revealed.value || reviewLoading.value || (grade.requiresIgnoreableCard && card.value?.can_ignore === false);
 }
 
 function isEditableTarget(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) {
-        return false;
-    }
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
 
-    return (
-        target.isContentEditable ||
-        ["INPUT", "SELECT", "TEXTAREA"].includes(target.tagName)
-    );
+  return target.isContentEditable || ["INPUT", "SELECT", "TEXTAREA"].includes(target.tagName);
 }
 
 function isButtonActivationTarget(target: EventTarget | null): boolean {
-    return (
-        target instanceof HTMLElement &&
-        target.closest("a, button, [role='button']") !== null
-    );
+  return target instanceof HTMLElement && target.closest("a, button, [role='button']") !== null;
 }
 
 function handleStudyShortcut(event: KeyboardEvent): void {
-    if (
-        isEditableTarget(event.target) ||
-        event.altKey ||
-        event.ctrlKey ||
-        event.metaKey ||
-        event.shiftKey
-    ) {
-        return;
+  if (isEditableTarget(event.target) || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+    return;
+  }
+
+  if (event.code === "Space" || event.key === " " || event.key === "Spacebar") {
+    if (isButtonActivationTarget(event.target)) {
+      return;
     }
 
-    if (event.code === "Space" || event.key === " " || event.key === "Spacebar") {
-        if (isButtonActivationTarget(event.target)) {
-            return;
-        }
-
-        if (card.value === null || loadingCard.value) {
-            return;
-        }
-
-        event.preventDefault();
-
-        if (!revealed.value && !reviewLoading.value) {
-            revealed.value = true;
-        }
-
-        return;
-    }
-
-    const grade = gradeOptions.find((option) => option.shortcut === event.key);
-    if (grade === undefined || card.value === null) {
-        return;
+    if (card.value === null || loadingCard.value) {
+      return;
     }
 
     event.preventDefault();
 
-    if (!isGradeDisabled(grade)) {
-        void submitGrade(grade.value);
+    if (!revealed.value && !reviewLoading.value) {
+      revealed.value = true;
     }
+
+    return;
+  }
+
+  const grade = gradeOptions.find((option) => option.shortcut === event.key);
+  if (grade === undefined || card.value === null) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (!isGradeDisabled(grade)) {
+    void submitGrade(grade.value);
+  }
 }
 
 onMounted(async () => {
-    window.addEventListener("keydown", handleStudyShortcut);
-    await Promise.all([loadSummary(), loadCard(selectedLanguage.value)]);
+  window.addEventListener("keydown", handleStudyShortcut);
+  await Promise.all([loadSummary(), loadCard(selectedLanguage.value)]);
 });
 
 onUnmounted(() => {
-    window.removeEventListener("keydown", handleStudyShortcut);
+  window.removeEventListener("keydown", handleStudyShortcut);
 });
 </script>
 

@@ -1,14 +1,7 @@
 <template>
-  <PagePanel
-    eyebrow="Authentication"
-    title="Sign in"
-  >
+  <PagePanel eyebrow="Authentication" title="Sign in">
     <v-form class="form-stack" @submit.prevent="onSubmit">
-      <v-text-field
-        v-model="username"
-        label="Username"
-        :rules="[rules.required]"
-      />
+      <v-text-field v-model="username" label="Username" :rules="[rules.required]" />
       <v-text-field
         v-model="password"
         label="Password"
@@ -19,13 +12,7 @@
       />
 
       <div class="action-row">
-        <v-btn
-          color="primary"
-          :disabled="!canSubmit || loading"
-          :loading="loading"
-          type="submit"
-          variant="flat"
-        >
+        <v-btn color="primary" :disabled="!canSubmit || loading" :loading="loading" type="submit" variant="flat">
           Login
         </v-btn>
         <v-btn to="/reset-password-request" variant="text">Forgot password?</v-btn>
@@ -50,9 +37,7 @@ const password = ref("");
 const showPassword = ref(false);
 const loading = ref(false);
 
-const canSubmit = computed(
-  () => username.value.trim().length > 0 && password.value.trim().length > 0,
-);
+const canSubmit = computed(() => username.value.trim().length > 0 && password.value.trim().length > 0);
 
 async function onSubmit(): Promise<void> {
   if (!canSubmit.value) {

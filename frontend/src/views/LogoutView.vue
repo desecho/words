@@ -1,9 +1,5 @@
 <template>
-  <PagePanel
-    eyebrow="Authentication"
-    title="Signing you out"
-    description="Your local auth state is being cleared."
-  />
+  <PagePanel eyebrow="Authentication" title="Signing you out" description="Your local auth state is being cleared." />
 </template>
 
 <script lang="ts" setup>
